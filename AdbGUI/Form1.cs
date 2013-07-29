@@ -67,14 +67,12 @@ namespace AdbGUI
             }
 
             adbPath = System.Environment.CurrentDirectory + @"\adb.exe";
-            this.opTextBox.AppendText(adbPath);
 
             //参看根目录下是否有apk
             String apk = System.Environment.CurrentDirectory + @"\Coon.apk";
             if(File.Exists(apk)){
                 this.apkTextBox.Text = apk;
             }
-
             this.showList();
         }
 
@@ -242,42 +240,63 @@ namespace AdbGUI
         //连接客户端
         private void connectClient(String ip)
         {
-            Process p = this.getProcess();
+            this.opTextBox.AppendText("正在连接"+ip + " ...\n");
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "connect " + ip;
             p.Start();
-            p.StandardInput.AutoFlush = true;
-            p.StandardInput.WriteLine(adbPath + " connect " + ip);
-            p.StandardInput.WriteLine("exit");
-            string report = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-            p.Close();
-            this.opTextBox.AppendText(report);
+            string output = p.StandardOutput.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
         }
 
         //关闭连接
         private void disConnectClient(String ip)
         {
-            Process p = this.getProcess();
+            this.opTextBox.AppendText("正在关闭连接" + ip + " ...\n");
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "disconnect " + ip;
             p.Start();
-            p.StandardInput.AutoFlush = true;
-            p.StandardInput.WriteLine(adbPath + " disconnect " + ip);
-            p.StandardInput.WriteLine("exit");
-            string report = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-            p.Close();
-            this.opTextBox.AppendText(report);
+            string output = p.StandardOutput.ReadToEnd();
+            if (output != "")
+            {
+                this.opTextBox.AppendText(output + "\n");
+            }
+            else
+            {
+                this.opTextBox.AppendText("关闭连接" + ip + "\n");
+            }            
         }
 
         //重启客户端
         private void rebootClient(String ip)
         {
-            this.connectClient(ip);
-            Process p = this.getProcess();
+            this.opTextBox.AppendText("正在重启" + ip + "...\n");
+            this.connectClient(ip);        
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s "+ip+":5555 reboot";
             p.Start();
-            p.StandardInput.AutoFlush = true;
-            p.StandardInput.WriteLine(adbPath + " -s " + ip + ":5555 shell reboot" + "\n");
-            p.StandardInput.WriteLine("exit");
             //p.WaitForExit();
-            p.Close();
+            //string output = p.StandardOutput.ReadToEnd();
+            this.opTextBox.AppendText("重启完成。如果失败，请重试。\n");
+        }
+
+        //发送命令
+        private void sendCmd(String cmd)
+        {
         }
 
         //导出日志
@@ -290,35 +309,37 @@ namespace AdbGUI
             }
 
             this.connectClient(ip);
-            this.opTextBox.AppendText("正在导出日志" + "\n");
-            Process p = this.getProcess();
+            this.opTextBox.AppendText("正在导出日志...\n");
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/log " + logDir;
             p.Start();
-            p.StandardInput.AutoFlush = true;
-            p.StandardInput.WriteLine(adbPath + " -s " + ip + @":5555 pull  /data/data/com.amtt.ids/files/log " + logDir + "\n");
-            p.StandardInput.WriteLine("exit");
-            string report = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-            p.Close();
-            this.opTextBox.AppendText(report + "\n");
+            string output = p.StandardOutput.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
             this.opTextBox.AppendText("日志已保存在程序根目录下"+ip + "文件夹中\n");
 
         }
 
-        //发送命令
+        //发送开发命令
         private void button14_Click(object sender, EventArgs e)
         {
             String cmd = this.cmdComboBox.SelectedValue.ToString();
             MessageBox.Show(cmd);
         }
 
-        //adb connect
+        //连接开发机
         private void button5_Click_1(object sender, EventArgs e)
         {
             String ip = this.dpTextBox.Text;
             this.connectClient(ip);
         }
 
-        //adb disconnect
+        //关闭开发机连接
         private void button10_Click(object sender, EventArgs e)
         {
             String ip = this.dpTextBox.Text;
@@ -326,12 +347,10 @@ namespace AdbGUI
             
         }
 
-        //开发 重启
+        //重启开发机
         private void button11_Click(object sender, EventArgs e)
         {
-            this.opTextBox.AppendText("重启中\n");
             String ip = this.dpTextBox.Text;
-            this.rebootClient(ip);
             this.rebootClient(ip);
         }
 
@@ -342,19 +361,10 @@ namespace AdbGUI
             this.exportLog(ip);
         }
 
+        //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            string fileName = adbPath;
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = fileName;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s 192.168.15.176:5555 reboot";//参数以空格分隔，如果某个参数为空，可以传入””
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            this.opTextBox.AppendText(output);
+            
         }
     }
 }
