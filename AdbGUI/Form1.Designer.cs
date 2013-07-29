@@ -77,11 +77,18 @@
             this.button17 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button18 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
+            this.button20 = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.sIpTextBox = new System.Windows.Forms.TextBox();
+            this.button21 = new System.Windows.Forms.Button();
             this.devGroupBox.SuspendLayout();
             this.testGroupBox.SuspendLayout();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // clientListView
@@ -165,6 +172,7 @@
             this.button2.TabIndex = 6;
             this.button2.Text = "删除客户端";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label3
             // 
@@ -177,10 +185,10 @@
             // 
             // apkTextBox
             // 
-            this.apkTextBox.Location = new System.Drawing.Point(46, 19);
+            this.apkTextBox.Location = new System.Drawing.Point(40, 17);
             this.apkTextBox.Name = "apkTextBox";
             this.apkTextBox.ReadOnly = true;
-            this.apkTextBox.Size = new System.Drawing.Size(355, 20);
+            this.apkTextBox.Size = new System.Drawing.Size(360, 20);
             this.apkTextBox.TabIndex = 8;
             // 
             // button3
@@ -281,21 +289,23 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(21, 45);
+            this.button8.Location = new System.Drawing.Point(40, 45);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(75, 23);
             this.button8.TabIndex = 21;
             this.button8.Text = "安装";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(102, 45);
+            this.button9.Location = new System.Drawing.Point(40, 19);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(75, 23);
             this.button9.TabIndex = 22;
             this.button9.Text = "重启";
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // opTextBox
             // 
@@ -363,12 +373,13 @@
             // 
             // button16
             // 
-            this.button16.Location = new System.Drawing.Point(183, 45);
+            this.button16.Location = new System.Drawing.Point(121, 19);
             this.button16.Name = "button16";
             this.button16.Size = new System.Drawing.Size(75, 23);
             this.button16.TabIndex = 7;
             this.button16.Text = "导出日志";
             this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
             // devGroupBox
             // 
@@ -384,7 +395,7 @@
             this.devGroupBox.Controls.Add(this.button11);
             this.devGroupBox.Location = new System.Drawing.Point(421, 30);
             this.devGroupBox.Name = "devGroupBox";
-            this.devGroupBox.Size = new System.Drawing.Size(512, 129);
+            this.devGroupBox.Size = new System.Drawing.Size(532, 129);
             this.devGroupBox.TabIndex = 9;
             this.devGroupBox.TabStop = false;
             this.devGroupBox.Text = "开发";
@@ -394,14 +405,14 @@
             this.cmdComboBox.FormattingEnabled = true;
             this.cmdComboBox.Items.AddRange(new object[] {
             "关闭服务"});
-            this.cmdComboBox.Location = new System.Drawing.Point(265, 18);
+            this.cmdComboBox.Location = new System.Drawing.Point(244, 18);
             this.cmdComboBox.Name = "cmdComboBox";
             this.cmdComboBox.Size = new System.Drawing.Size(121, 21);
             this.cmdComboBox.TabIndex = 8;
             // 
             // dpTextBox
             // 
-            this.dpTextBox.Location = new System.Drawing.Point(56, 19);
+            this.dpTextBox.Location = new System.Drawing.Point(40, 22);
             this.dpTextBox.Name = "dpTextBox";
             this.dpTextBox.Size = new System.Drawing.Size(152, 20);
             this.dpTextBox.TabIndex = 1;
@@ -410,7 +421,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(228, 22);
+            this.label9.Location = new System.Drawing.Point(207, 22);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(31, 13);
             this.label9.TabIndex = 7;
@@ -427,7 +438,7 @@
             // 
             // button15
             // 
-            this.button15.Location = new System.Drawing.Point(345, 60);
+            this.button15.Location = new System.Drawing.Point(364, 60);
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(75, 23);
             this.button15.TabIndex = 6;
@@ -437,7 +448,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(21, 60);
+            this.button5.Location = new System.Drawing.Point(40, 59);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 2;
@@ -447,7 +458,7 @@
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(264, 60);
+            this.button14.Location = new System.Drawing.Point(283, 60);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(75, 23);
             this.button14.TabIndex = 5;
@@ -457,7 +468,7 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(102, 60);
+            this.button10.Location = new System.Drawing.Point(121, 59);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(75, 23);
             this.button10.TabIndex = 3;
@@ -467,7 +478,7 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(183, 60);
+            this.button11.Location = new System.Drawing.Point(202, 60);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(75, 23);
             this.button11.TabIndex = 4;
@@ -477,25 +488,28 @@
             // 
             // testGroupBox
             // 
+            this.testGroupBox.Controls.Add(this.button21);
+            this.testGroupBox.Controls.Add(this.sIpTextBox);
+            this.testGroupBox.Controls.Add(this.label10);
+            this.testGroupBox.Controls.Add(this.button20);
+            this.testGroupBox.Controls.Add(this.button19);
             this.testGroupBox.Controls.Add(this.apkTextBox);
-            this.testGroupBox.Controls.Add(this.button16);
             this.testGroupBox.Controls.Add(this.button8);
-            this.testGroupBox.Controls.Add(this.button9);
             this.testGroupBox.Controls.Add(this.button3);
             this.testGroupBox.Controls.Add(this.label3);
-            this.testGroupBox.Location = new System.Drawing.Point(421, 165);
+            this.testGroupBox.Location = new System.Drawing.Point(421, 166);
             this.testGroupBox.Name = "testGroupBox";
-            this.testGroupBox.Size = new System.Drawing.Size(512, 103);
+            this.testGroupBox.Size = new System.Drawing.Size(532, 137);
             this.testGroupBox.TabIndex = 32;
             this.testGroupBox.TabStop = false;
-            this.testGroupBox.Text = "部署";
+            this.testGroupBox.Text = "批量部署";
             // 
             // opGroupBox
             // 
             this.opGroupBox.Controls.Add(this.opTextBox);
-            this.opGroupBox.Location = new System.Drawing.Point(421, 381);
+            this.opGroupBox.Location = new System.Drawing.Point(423, 501);
             this.opGroupBox.Name = "opGroupBox";
-            this.opGroupBox.Size = new System.Drawing.Size(512, 222);
+            this.opGroupBox.Size = new System.Drawing.Size(530, 222);
             this.opGroupBox.TabIndex = 33;
             this.opGroupBox.TabStop = false;
             this.opGroupBox.Text = "输出";
@@ -528,7 +542,7 @@
             // 
             // button17
             // 
-            this.button17.Location = new System.Drawing.Point(427, 59);
+            this.button17.Location = new System.Drawing.Point(445, 60);
             this.button17.Name = "button17";
             this.button17.Size = new System.Drawing.Size(75, 23);
             this.button17.TabIndex = 9;
@@ -545,9 +559,9 @@
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.button12);
             this.groupBox1.Controls.Add(this.soundTextBox);
-            this.groupBox1.Location = new System.Drawing.Point(421, 274);
+            this.groupBox1.Location = new System.Drawing.Point(423, 393);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(511, 101);
+            this.groupBox1.Size = new System.Drawing.Size(530, 101);
             this.groupBox1.TabIndex = 35;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "定制";
@@ -561,11 +575,69 @@
             this.button18.Text = "定制";
             this.button18.UseVisualStyleBackColor = true;
             // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(202, 45);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(75, 23);
+            this.button19.TabIndex = 23;
+            this.button19.Text = "启动";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
+            // 
+            // button20
+            // 
+            this.button20.Location = new System.Drawing.Point(121, 45);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(75, 23);
+            this.button20.TabIndex = 24;
+            this.button20.Text = "卸载";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.button20_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.button9);
+            this.groupBox2.Controls.Add(this.button16);
+            this.groupBox2.Location = new System.Drawing.Point(421, 310);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(532, 76);
+            this.groupBox2.TabIndex = 36;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "维护";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(9, 105);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(53, 13);
+            this.label10.TabIndex = 25;
+            this.label10.Text = "服务器IP";
+            // 
+            // sIpTextBox
+            // 
+            this.sIpTextBox.Location = new System.Drawing.Point(68, 102);
+            this.sIpTextBox.Name = "sIpTextBox";
+            this.sIpTextBox.Size = new System.Drawing.Size(332, 20);
+            this.sIpTextBox.TabIndex = 26;
+            // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(421, 105);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(75, 23);
+            this.button21.TabIndex = 27;
+            this.button21.Text = "快速启动";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(945, 615);
+            this.ClientSize = new System.Drawing.Size(968, 729);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.opGroupBox);
             this.Controls.Add(this.testGroupBox);
@@ -584,6 +656,7 @@
             this.clientGroupBox.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -639,6 +712,12 @@
         private System.Windows.Forms.Button button17;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Button button20;
+        private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.TextBox sIpTextBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 

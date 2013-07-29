@@ -180,10 +180,6 @@ namespace AdbGUI
 
         }
 
-        private void button5_Click(object sender, EventArgs e)
-        {
-            clientListView.Items.Clear();
-        }
         //全选
         private void button6_Click(object sender, EventArgs e)
         {
@@ -322,8 +318,94 @@ namespace AdbGUI
             string output = p.StandardOutput.ReadToEnd();
             this.opTextBox.AppendText(output + "\n");
             this.opTextBox.AppendText("日志已保存在程序根目录下"+ip + "文件夹中\n");
-
+            this.disConnectClient(ip);
         }
+
+        //安装应用
+        private void installApp(String ip,String appPath)
+        {
+            this.opTextBox.AppendText("正在安装应用" + ip + " ...\n");
+            this.opTextBox.AppendText("如果长时间未反应，请手动安装。\n");
+            this.opTextBox.AppendText("如果安装失败，请尝试卸载旧应用。\n");
+            this.connectClient(ip);
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s " + ip + ":5555 install " + appPath;
+            p.Start();
+            p.WaitForExit();
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
+            this.opTextBox.AppendText(error + "\n");
+            this.disConnectClient(ip);
+        }
+
+        //卸载应用
+        private void uninstallApp(String ip, String package)
+        {
+            this.opTextBox.AppendText("正在卸载旧应用" + package + " ...\n");
+            this.connectClient(ip);
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s " + ip + ":5555 uninstall " + package;
+            p.Start();
+            p.WaitForExit();
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
+            this.opTextBox.AppendText(error + "\n");
+            this.disConnectClient(ip);
+        }
+
+        //启动应用
+        private void startApp(String ip)
+        {
+            this.opTextBox.AppendText("正在启动应用...\n");
+            this.connectClient(ip);
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s " + ip + ":5555 shell am start -n com.amtt.ids/com.amtt.ids.AppStart";
+            p.Start();
+            p.WaitForExit();
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
+            this.opTextBox.AppendText(error + "\n");
+            this.disConnectClient(ip);
+        }
+
+        //快速启动
+        private void quickStartApp(String ip,String clientName,String serverIp){
+            this.opTextBox.AppendText("正在快速启动应用...\n");
+            this.connectClient(ip);
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s " + ip + ":5555 shell am start -n com.amtt.ids/com.amtt.ids.AdbStart --es clientName '" + clientName + "'" + " --es serverIp '" + serverIp + "'";
+            p.Start();
+            p.WaitForExit();
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
+            this.opTextBox.AppendText(error + "\n");
+            this.disConnectClient(ip);
+        }
+
 
         //发送开发命令
         private void button14_Click(object sender, EventArgs e)
@@ -364,7 +446,155 @@ namespace AdbGUI
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            
+            this.opTextBox.AppendText("正在启动应用...\n");
+            this.connectClient("192.168.15.176");
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.FileName = adbPath;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.Arguments = "-s 192.168.15.176:5555 shell am start -n com.amtt.test8/com.amtt.test8.MainActivity --es str 'liugr'";
+            p.Start();
+            p.WaitForExit();
+            string output = p.StandardOutput.ReadToEnd();
+            string error = p.StandardError.ReadToEnd();
+            this.opTextBox.AppendText(output + "\n");
+            this.opTextBox.AppendText(error + "\n");
+        }
+
+        //批量删除客户端
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("确认删除？", "此删除不可恢复", MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
+            Configuration appConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if(item.Checked){
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("从列表中删除"+ip+"\n");
+                    appConf.AppSettings.Settings.Remove(ip);
+                }
+                
+            }
+            appConf.Save();
+            ConfigurationManager.RefreshSection("appSettings");
+            showList();
+        }
+
+        //批量安装客户端
+        private void button8_Click(object sender, EventArgs e)
+        {
+            String appPath = this.apkTextBox.Text;
+            if (appPath=="")
+            {
+                MessageBox.Show("请选择应用");
+                return;
+            }
+
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("=================="+ip+"==================\n\n");
+                    this.installApp(ip,appPath);
+                    this.opTextBox.AppendText("==================END==================\n\n\n");
+                }
+
+            }
+        }
+
+        //批量重启客户端
+        private void button9_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.rebootClient(ip);
+                    this.opTextBox.AppendText("==================END=========================\n\n\n");
+                }
+
+            }
+        }
+
+        //批量导出日志
+        private void button16_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.exportLog(ip);
+                    this.opTextBox.AppendText("==================END=========================\n\n\n");
+                }
+
+            }
+        }
+
+        //批量启动应用
+        private void button19_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.startApp(ip);
+                    this.opTextBox.AppendText("==================END=========================\n\n\n");
+                }
+
+            }
+        }
+
+        //批量卸载应用
+        private void button20_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.uninstallApp(ip,"com.amtt.ids");
+                    this.opTextBox.AppendText("==================END=========================\n\n\n");
+                }
+
+            }
+        }
+
+        //批量快速启动
+        private void button21_Click(object sender, EventArgs e)
+        {
+            String serverIp = this.sIpTextBox.Text;
+            if (serverIp == "")
+            {
+                MessageBox.Show("服务器IP有误！");
+                return;
+            }
+
+            foreach (ListViewItem item in clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String name = item.SubItems[1].Text.ToString();
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.quickStartApp(ip,name,serverIp);
+                    this.opTextBox.AppendText("==================END=========================\n\n\n");
+                }
+
+            }
         }
     }
 }
