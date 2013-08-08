@@ -498,7 +498,7 @@ namespace AdbGUI
             {
                 if (protectList.IndexOf(cmd) != -1)
                 {
-                    MessageBox.Show("危险!!!请在自定义框输入'"+cmd+"'再执行");
+                    MessageBox.Show("危险操作!!!请在自定义框输入'"+cmd+"'再发送");
                     return;
                 }
             }
