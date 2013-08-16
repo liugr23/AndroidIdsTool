@@ -94,6 +94,7 @@
             this.button18 = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.button11 = new System.Windows.Forms.Button();
             this.devGroupBox.SuspendLayout();
             this.testGroupBox.SuspendLayout();
             this.opGroupBox.SuspendLayout();
@@ -393,6 +394,7 @@
             // 
             // devGroupBox
             // 
+            this.devGroupBox.Controls.Add(this.button11);
             this.devGroupBox.Controls.Add(this.speedTextBox);
             this.devGroupBox.Controls.Add(this.button16);
             this.devGroupBox.Controls.Add(this.button9);
@@ -722,6 +724,16 @@
             this.linkLabel1.Text = "donate";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(364, 75);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.TabIndex = 23;
+            this.button11.Text = "导出debug";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -818,6 +830,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button button11;
     }
 }
 
