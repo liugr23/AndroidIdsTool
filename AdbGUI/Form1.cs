@@ -179,7 +179,6 @@ namespace AdbGUI
             {
                 string path = openFileDialog.FileName;
                 this.apkTextBox.Text = path;
-
             }
         }
 
@@ -303,21 +302,35 @@ namespace AdbGUI
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
             p.StartInfo.FileName = adbPath;
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.Arguments = "connect " + ip;
             p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            p.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             p.Start();
             p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
             p.WaitForExit();
         }
 
         //连接客户端
-        private void connectClient(ArrayList clientList)
+        private void connectClient()
         {
-            for (int i = 0; i < clientList.Count; i++)
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
             {
-                String ip = clientList[i].ToString();
+                if(end){
+                    break;
+                }
+                if(i>0){
+                    Thread.Sleep(5000);
+                    this.updateOutput("休眠5秒\n");
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("==========="+ip+"=============\n");
+                connectClient(ip);
+                this.updateOutput("========================\n");
             }
         }
 
@@ -579,18 +592,20 @@ namespace AdbGUI
         //连接客户端
         private void button5_Click_1(object sender, EventArgs e)
         {
-            ArrayList clientList = this.getCheckedClient();
-            if (clientList.Count==0)
+            setCheckedClient();
+            if (checkedClientList.Count==0)
             {
                 return;
             }
-            if (clientList.Count >1)
+            if (checkedClientList.Count > 1)
             {
                 if (MessageBox.Show("连接数大于1，建议使用命令行，继续yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     return;
                 }
             }
+            Thread t = new Thread(new ThreadStart(this.connectClient));
+            t.Start();
         }
 
         //关闭客户端
@@ -828,6 +843,7 @@ namespace AdbGUI
         //获得选中客户端列表
         private void setCheckedClient()
         {
+            this.checkedClientList.Clear();
             foreach (ListViewItem item in this.clientListView.Items)
             {
                 if (item.Checked)
@@ -853,10 +869,10 @@ namespace AdbGUI
         //Invoke回调函数
         private void updateOutput(string info)
         {
-            if (this.opTextBox.InvokeRequired)//当前线程不是创建线程
-                this.opTextBox.Invoke(new InvokeCallback(updateOutput), new object[] { info });//回调
+            if (this.opRichTextBox.InvokeRequired)//当前线程不是创建线程
+                this.opRichTextBox.Invoke(new InvokeCallback(updateOutput), new object[] { info });//回调
             else//当前线程是创建线程（界面线程）
-                this.opTextBox.AppendText(info);//直接更新
+                this.opRichTextBox.AppendText(info);//直接更新
         }
 
         private void test()
@@ -874,14 +890,30 @@ namespace AdbGUI
         {         
             AddMessageHandler handler=delegate(string msg)
             {
-                this.opTextBox.AppendText(msg);
-                this.opTextBox.Select(this.opTextBox.Text.Length - 1, 0);
-                this.opTextBox.ScrollToCaret();
+                if(msg!=null){
+                    this.opRichTextBox.SelectionColor = Color.Blue;
+                    this.opRichTextBox.AppendText(msg + "\n");
+                //this.opTextBox.Select(this.opTextBox.Text.Length - 1, 0);
+                //this.opTextBox.ScrollToCaret();
+                }
             };
 
-            if (this.opTextBox.InvokeRequired)
-                this.opTextBox.Invoke(handler, e.Data);
+            if (this.opRichTextBox.InvokeRequired)
+                this.opRichTextBox.Invoke(handler, e.Data);
         }
+
+
+
+         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+         {
+             AboutBox1 aboutBox1 = new AboutBox1();
+             aboutBox1.Show();
+         }
+
+         private void donateToolStripMenuItem_Click(object sender, EventArgs e)
+         {
+             System.Diagnostics.Process.Start("https://me.alipay.com/liugr");
+         }
 
     }
 }

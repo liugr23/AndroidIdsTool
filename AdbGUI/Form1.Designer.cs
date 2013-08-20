@@ -93,11 +93,12 @@
             this.button24 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button18 = new System.Windows.Forms.Button();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.donateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.opRichTextBox = new System.Windows.Forms.RichTextBox();
             this.devGroupBox.SuspendLayout();
             this.testGroupBox.SuspendLayout();
             this.opGroupBox.SuspendLayout();
@@ -327,9 +328,8 @@
             this.opTextBox.Location = new System.Drawing.Point(17, 19);
             this.opTextBox.Multiline = true;
             this.opTextBox.Name = "opTextBox";
-            this.opTextBox.ReadOnly = true;
             this.opTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.opTextBox.Size = new System.Drawing.Size(485, 197);
+            this.opTextBox.Size = new System.Drawing.Size(485, 42);
             this.opTextBox.TabIndex = 23;
             // 
             // label7
@@ -656,6 +656,7 @@
             // 
             // opGroupBox
             // 
+            this.opGroupBox.Controls.Add(this.opRichTextBox);
             this.opGroupBox.Controls.Add(this.opTextBox);
             this.opGroupBox.Location = new System.Drawing.Point(423, 501);
             this.opGroupBox.Name = "opGroupBox";
@@ -727,17 +728,6 @@
             this.button18.UseVisualStyleBackColor = true;
             this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
-            // linkLabel1
-            // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(369, 704);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(40, 13);
-            this.linkLabel1.TabIndex = 37;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "donate";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -751,23 +741,40 @@
             // 帮助ToolStripMenuItem
             // 
             this.帮助ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.donateToolStripMenuItem,
             this.关于ToolStripMenuItem});
             this.帮助ToolStripMenuItem.Name = "帮助ToolStripMenuItem";
             this.帮助ToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
             this.帮助ToolStripMenuItem.Text = "帮助";
             // 
+            // donateToolStripMenuItem
+            // 
+            this.donateToolStripMenuItem.Name = "donateToolStripMenuItem";
+            this.donateToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.donateToolStripMenuItem.Text = "Donate";
+            this.donateToolStripMenuItem.Click += new System.EventHandler(this.donateToolStripMenuItem_Click);
+            // 
             // 关于ToolStripMenuItem
             // 
             this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
-            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.关于ToolStripMenuItem.Text = "关于";
+            this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
+            // 
+            // opRichTextBox
+            // 
+            this.opRichTextBox.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.opRichTextBox.Location = new System.Drawing.Point(17, 72);
+            this.opRichTextBox.Name = "opRichTextBox";
+            this.opRichTextBox.Size = new System.Drawing.Size(485, 144);
+            this.opRichTextBox.TabIndex = 24;
+            this.opRichTextBox.Text = "";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(968, 729);
-            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.opGroupBox);
             this.Controls.Add(this.testGroupBox);
@@ -777,6 +784,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Android IDS辅助工具";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.devGroupBox.ResumeLayout(false);
@@ -855,7 +863,6 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox effectComboBox;
         private System.Windows.Forms.TextBox effectTextBox;
-        private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
@@ -866,6 +873,8 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 帮助ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem donateToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox opRichTextBox;
     }
 }
 
