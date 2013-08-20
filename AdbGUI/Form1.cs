@@ -21,7 +21,11 @@ namespace AdbGUI
         private String adbPath = "";
         private String devIp = "jason.liu";
         //超时
-        private const int timeout = 10000;
+        private const int timeout = 15000;
+        //终止当前操作
+        private bool end = false;
+        //选中的客户端列表
+        private ArrayList checkedClientList = new ArrayList();
 
         public Form1()
         {
@@ -287,26 +291,34 @@ namespace AdbGUI
             {
                 string path = openFileDialog.FileName;
                 this.soundTextBox.Text = path;
-
             }
         }
 
         //连接客户端
         private void connectClient(String ip)
         {
-            this.opTextBox.AppendText("正在连接"+ip + " ...\n");
+            String show = "正在连接" + ip + " ...\n";
+            this.updateOutput(show);
+
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.FileName = adbPath;
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.Arguments = "connect " + ip;
+            p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
             p.Start();
+            p.BeginOutputReadLine();
             p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            string error = p.StandardOutput.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            this.opTextBox.AppendText(error + "\n");
+        }
+
+        //连接客户端
+        private void connectClient(ArrayList clientList)
+        {
+            for (int i = 0; i < clientList.Count; i++)
+            {
+                String ip = clientList[i].ToString();
+            }
         }
 
         //关闭连接
@@ -567,14 +579,16 @@ namespace AdbGUI
         //连接客户端
         private void button5_Click_1(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            ArrayList clientList = this.getCheckedClient();
+            if (clientList.Count==0)
             {
-                if (item.Checked)
+                return;
+            }
+            if (clientList.Count >1)
+            {
+                if (MessageBox.Show("连接数大于1，建议使用命令行，继续yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.connectClient(ip);
-                    this.opTextBox.AppendText("==================END==================\n\n\n");
+                    return;
                 }
             }
         }
@@ -811,10 +825,25 @@ namespace AdbGUI
             return clientList;
         }
 
+        //获得选中客户端列表
+        private void setCheckedClient()
+        {
+            foreach (ListViewItem item in this.clientListView.Items)
+            {
+                if (item.Checked)
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    this.checkedClientList.Add(ip);
+                }
+            }
+        }
+
+
 
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
+            this.setCheckedClient();
             Thread t = new Thread(new ThreadStart(this.test));
             t.Start();
         }
@@ -822,19 +851,36 @@ namespace AdbGUI
         //更新输出信息
         private delegate void InvokeCallback(string info); //定义回调函数（代理）格式
         //Invoke回调函数
-        private void UpdateOutput(string info)
+        private void updateOutput(string info)
         {
             if (this.opTextBox.InvokeRequired)//当前线程不是创建线程
-                this.opTextBox.Invoke(new InvokeCallback(UpdateOutput), new object[] { info });//回调
+                this.opTextBox.Invoke(new InvokeCallback(updateOutput), new object[] { info });//回调
             else//当前线程是创建线程（界面线程）
                 this.opTextBox.AppendText(info);//直接更新
         }
 
         private void test()
         {
-            UpdateOutput("休眠3秒");
+            updateOutput("休眠6秒");
             Thread.Sleep(6000);
-            UpdateOutput("启动");
+            updateOutput("启动");
+            updateOutput(checkedClientList[0].ToString());
+        }
+
+
+        //即时输出
+         private delegate void AddMessageHandler(string msg);
+         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {         
+            AddMessageHandler handler=delegate(string msg)
+            {
+                this.opTextBox.AppendText(msg);
+                this.opTextBox.Select(this.opTextBox.Text.Length - 1, 0);
+                this.opTextBox.ScrollToCaret();
+            };
+
+            if (this.opTextBox.InvokeRequired)
+                this.opTextBox.Invoke(handler, e.Data);
         }
 
     }

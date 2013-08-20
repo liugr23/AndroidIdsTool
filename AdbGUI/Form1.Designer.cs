@@ -64,6 +64,7 @@
             this.button13 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
             this.devGroupBox = new System.Windows.Forms.GroupBox();
+            this.button11 = new System.Windows.Forms.Button();
             this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -94,12 +95,15 @@
             this.button18 = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.button11 = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.帮助ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.devGroupBox.SuspendLayout();
             this.testGroupBox.SuspendLayout();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // clientListView
@@ -421,6 +425,16 @@
             this.devGroupBox.TabStop = false;
             this.devGroupBox.Text = "开发测试";
             // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(364, 75);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.TabIndex = 23;
+            this.button11.Text = "导出debug";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
             // speedTextBox
             // 
             this.speedTextBox.Location = new System.Drawing.Point(381, 49);
@@ -724,15 +738,29 @@
             this.linkLabel1.Text = "donate";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
-            // button11
+            // menuStrip1
             // 
-            this.button11.Location = new System.Drawing.Point(364, 75);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(75, 23);
-            this.button11.TabIndex = 23;
-            this.button11.Text = "导出debug";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.帮助ToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(968, 24);
+            this.menuStrip1.TabIndex = 38;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // 帮助ToolStripMenuItem
+            // 
+            this.帮助ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.关于ToolStripMenuItem});
+            this.帮助ToolStripMenuItem.Name = "帮助ToolStripMenuItem";
+            this.帮助ToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.帮助ToolStripMenuItem.Text = "帮助";
+            // 
+            // 关于ToolStripMenuItem
+            // 
+            this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
+            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.关于ToolStripMenuItem.Text = "关于";
             // 
             // Form1
             // 
@@ -745,7 +773,9 @@
             this.Controls.Add(this.testGroupBox);
             this.Controls.Add(this.devGroupBox);
             this.Controls.Add(this.clientGroupBox);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Android IDS辅助工具";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -759,6 +789,8 @@
             this.clientGroupBox.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -831,6 +863,9 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem 帮助ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 关于ToolStripMenuItem;
     }
 }
 
