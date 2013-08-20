@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("AdbGUI")]
 [assembly: AssemblyDescription("Android IDS辅助工具\r\nCreated By Jason Liu\r\njason.liu@amttgroup.com")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("安美世纪(北京)科技有限公司")]
+[assembly: AssemblyCompany("个人")]
 [assembly: AssemblyProduct("AdbGUI")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]

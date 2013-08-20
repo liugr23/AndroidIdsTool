@@ -13,6 +13,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Threading;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
 namespace AdbGUI
 {
@@ -26,6 +27,8 @@ namespace AdbGUI
         private bool end = false;
         //选中的客户端列表
         private ArrayList checkedClientList = new ArrayList();
+        //当前操作的Ip
+        private String currentIp = "";
 
         public Form1()
         {
@@ -40,9 +43,7 @@ namespace AdbGUI
             {
                 this.opTextBox.AppendText("错误:adb.exe或AdbWinApi.dll不存在\n");
                 this.opTextBox.AppendText("联系jason.liu@amttgroup.com\n");
-                this.devGroupBox.Enabled = false;
-                this.testGroupBox.Enabled = false;
-                this.clientGroupBox.Enabled = false;
+                this.operateTabControl.Enabled = false;
             }
             adbPath = System.Environment.CurrentDirectory + @"\adb.exe";
 
@@ -53,7 +54,7 @@ namespace AdbGUI
             {
                 adbPath = @"adb.exe";
                 //开发者选项
-                this.devGroupBox.Enabled = true;
+                this.devPanel.Enabled = true;
                 String txt = "";
                 StreamReader sr = new StreamReader(@"jason.txt");
                 while (!sr.EndOfStream)
@@ -81,7 +82,7 @@ namespace AdbGUI
                 list.Add(new DictionaryEntry("debug", "Debug"));
                 list.Add(new DictionaryEntry("screenshot", "截图"));
                 list.Add(new DictionaryEntry("restartApp", "重启应用"));
-                list.Add(new DictionaryEntry("reboot", "重启"));  
+                list.Add(new DictionaryEntry("reboot", "重启"));
                 list.Add(new DictionaryEntry("stopService", "关闭服务"));
                 list.Add(new DictionaryEntry("startProtect", "开启任务保护"));
                 list.Add(new DictionaryEntry("stopProtect", "关闭任务保护"));
@@ -130,18 +131,19 @@ namespace AdbGUI
             }
             else
             {
-                this.devGroupBox.Enabled = false;
+                this.devPanel.Enabled = false;
             }
 
             //参看根目录下是否有apk
             String apkPath = System.Environment.CurrentDirectory + @"\Coon.apk";
-            if(File.Exists(apkPath)){
+            if (File.Exists(apkPath))
+            {
                 this.apkTextBox.Text = apkPath;
-            }            
+            }
         }
 
         //保存数据
-        private void addClient(String ip,String name)
+        private void addClient(String ip, String name)
         {
             Configuration appConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             appConf.AppSettings.Settings.Remove(ip);
@@ -154,13 +156,18 @@ namespace AdbGUI
         private void showList()
         {
             clientListView.Items.Clear();
+            int i = 0;
             foreach (string key in ConfigurationManager.AppSettings)
             {
+                i++;
                 string val = ConfigurationManager.AppSettings[key];
                 Console.WriteLine("{0}: {1}", key, val);
                 ListViewItem item = new ListViewItem("");
                 item.SubItems.Add(val);
                 item.SubItems.Add(key);
+                if(i%2 == 0){
+                    item.BackColor = Color.AliceBlue;
+                }        
                 clientListView.Items.Add(item);
             }
         }
@@ -193,7 +200,7 @@ namespace AdbGUI
                 return;
             }
             this.addClient(ip, name);
-            this.showList();  
+            this.showList();
         }
 
         //批量添加客户端
@@ -216,16 +223,18 @@ namespace AdbGUI
             {
                 start = int.Parse(p4);
                 end = int.Parse(p5);
-            } catch(Exception){
+            }
+            catch (Exception)
+            {
                 MessageBox.Show("输入有误！");
                 return;
             }
 
-            for (int i = start; i < end;i++ )
+            for (int i = start; i < end; i++)
             {
                 String name = "c_" + i;
                 String ip = p1 + "." + p2 + "." + p3 + "." + i;
-                this.addClient(ip,name);
+                this.addClient(ip, name);
             }
             this.showList();
 
@@ -296,8 +305,9 @@ namespace AdbGUI
         //连接客户端
         private void connectClient(String ip)
         {
-            String show = "正在连接" + ip + " ...\n";
-            this.updateOutput(show);
+            currentIp = ip;
+
+            this.updateOutput("正在连接" + ip + " ...\n");
 
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
@@ -307,7 +317,7 @@ namespace AdbGUI
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.Arguments = "connect " + ip;
             p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            p.ErrorDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            p.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
             p.Start();
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
@@ -320,15 +330,17 @@ namespace AdbGUI
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
-                if(end){
+                if (end)
+                {
                     break;
                 }
-                if(i>0){
+                if (i > 0)
+                {
                     Thread.Sleep(5000);
                     this.updateOutput("休眠5秒\n");
                 }
                 String ip = checkedClientList[i].ToString();
-                this.updateOutput("==========="+ip+"=============\n");
+                this.updateOutput("===========" + ip + "=============\n");
                 connectClient(ip);
                 this.updateOutput("========================\n");
             }
@@ -362,14 +374,14 @@ namespace AdbGUI
         private void rebootClient(String ip)
         {
             this.opTextBox.AppendText("正在重启" + ip + "...\n");
-            this.connectClient(ip);        
+            this.connectClient(ip);
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.FileName = adbPath;
             p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s "+ip+":5555 reboot";
+            p.StartInfo.Arguments = "-s " + ip + ":5555 reboot";
             p.Start();
             //p.WaitForExit();
             //string output = p.StandardOutput.ReadToEnd();
@@ -433,7 +445,7 @@ namespace AdbGUI
         }
 
         //安装应用
-        private void installApp(String ip,String appPath)
+        private void installApp(String ip, String appPath)
         {
             this.opTextBox.AppendText("正在安装应用" + ip + " ...\n");
             this.opTextBox.AppendText("如果长时间未反应，请手动安装。\n");
@@ -501,7 +513,8 @@ namespace AdbGUI
         }
 
         //快速启动
-        private void quickStartApp(String ip,String clientName,String serverIp){
+        private void quickStartApp(String ip, String clientName, String serverIp)
+        {
             this.opTextBox.AppendText("正在快速启动应用...\n");
             this.connectClient(ip);
             Process p = new Process();
@@ -524,17 +537,17 @@ namespace AdbGUI
         //结束ADB进程
         private void killAdb()
         {
-           System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("adb");
-           foreach (System.Diagnostics.Process adbProcess in killprocess)
-          {
-           // adbProcess.Kill();
+            System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("adb");
+            foreach (System.Diagnostics.Process adbProcess in killprocess)
+            {
+                // adbProcess.Kill();
             }
         }
 
         //发送命令
-        private void sendMessage(String ip,int port,String msg)
+        private void sendMessage(String ip, int port, String msg)
         {
-            this.opTextBox.AppendText(ip+"----发送命令" +msg+ "\n");
+            this.opTextBox.AppendText(ip + "----发送命令" + msg + "\n");
             TcpClient client = new TcpClient(ip, port);
             NetworkStream stream = client.GetStream();
             StreamWriter writer = new StreamWriter(stream);
@@ -565,7 +578,7 @@ namespace AdbGUI
             {
                 if (protectList.IndexOf(cmd) != -1)
                 {
-                    MessageBox.Show("危险操作!!!请在自定义框输入'"+cmd+"'再发送");
+                    MessageBox.Show("危险操作!!!请在自定义框输入'" + cmd + "'再发送");
                     return;
                 }
             }
@@ -593,7 +606,8 @@ namespace AdbGUI
         private void button5_Click_1(object sender, EventArgs e)
         {
             setCheckedClient();
-            if (checkedClientList.Count==0)
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
                 return;
             }
@@ -610,7 +624,7 @@ namespace AdbGUI
 
         //关闭客户端
         private void button10_Click(object sender, EventArgs e)
-        {            
+        {
             foreach (ListViewItem item in clientListView.Items)
             {
                 if (item.Checked)
@@ -634,12 +648,13 @@ namespace AdbGUI
             Configuration appConf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             foreach (ListViewItem item in clientListView.Items)
             {
-                if(item.Checked){
+                if (item.Checked)
+                {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("从列表中删除"+ip+"\n");
+                    this.opTextBox.AppendText("从列表中删除" + ip + "\n");
                     appConf.AppSettings.Settings.Remove(ip);
                 }
-                
+
             }
             appConf.Save();
             ConfigurationManager.RefreshSection("appSettings");
@@ -650,7 +665,7 @@ namespace AdbGUI
         private void button8_Click(object sender, EventArgs e)
         {
             String appPath = this.apkTextBox.Text;
-            if (appPath=="")
+            if (appPath == "")
             {
                 MessageBox.Show("请选择应用");
                 return;
@@ -661,8 +676,8 @@ namespace AdbGUI
                 if (item.Checked)
                 {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("=================="+ip+"==================\n\n");
-                    this.installApp(ip,appPath);
+                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.installApp(ip, appPath);
                     this.opTextBox.AppendText("==================END==================\n\n\n");
                 }
             }
@@ -722,7 +737,7 @@ namespace AdbGUI
                 {
                     String ip = item.SubItems[2].Text.ToString();
                     this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.uninstallApp(ip,"com.amtt.ids");
+                    this.uninstallApp(ip, "com.amtt.ids");
                     this.opTextBox.AppendText("==================END=========================\n\n\n");
                     this.opTextBox.AppendText("休眠10000毫秒.请勿操作！！！");
                     Thread.Sleep(10000);
@@ -747,7 +762,7 @@ namespace AdbGUI
                     String name = item.SubItems[1].Text.ToString();
                     String ip = item.SubItems[2].Text.ToString();
                     this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.quickStartApp(ip,name,serverIp);
+                    this.quickStartApp(ip, name, serverIp);
                     this.opTextBox.AppendText("==================END=========================\n\n\n");
                 }
             }
@@ -757,14 +772,14 @@ namespace AdbGUI
         private void button25_Click(object sender, EventArgs e)
         {
             String cmd = this.effectComboBox.SelectedValue.ToString();
-            if (cmd =="-1")
+            if (cmd == "-1")
             {
                 MessageBox.Show("鄙视你");
                 return;
             }
 
             String custom = this.effectTextBox.Text;
-            if (custom!="")
+            if (custom != "")
             {
                 cmd = "e" + custom;
             }
@@ -796,7 +811,7 @@ namespace AdbGUI
                 }
             }
 
-           
+
         }
 
         //
@@ -823,21 +838,6 @@ namespace AdbGUI
                     this.opTextBox.AppendText("==================END=========================\n\n\n");
                 }
             }
-        }
-
-        //获得选中客户端列表
-        private ArrayList getCheckedClient()
-        {
-            ArrayList clientList = new ArrayList();
-            foreach (ListViewItem item in this.clientListView.Items)
-            {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    clientList.Add(ip);
-                }
-            }
-            return clientList;
         }
 
         //获得选中客户端列表
@@ -885,35 +885,79 @@ namespace AdbGUI
 
 
         //即时输出
-         private delegate void AddMessageHandler(string msg);
-         private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {         
-            AddMessageHandler handler=delegate(string msg)
+        private delegate void AddMessageHandler(string msg);
+        private void p_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            AddMessageHandler handler = delegate(string msg)
             {
-                if(msg!=null){
+                if (msg != null)
+                {
                     this.opRichTextBox.SelectionColor = Color.Blue;
                     this.opRichTextBox.AppendText(msg + "\n");
-                //this.opTextBox.Select(this.opTextBox.Text.Length - 1, 0);
-                //this.opTextBox.ScrollToCaret();
+                    this.opRichTextBox.Focus();
+                    this.opRichTextBox.Select(this.opRichTextBox.TextLength, 0);
+                    this.opRichTextBox.ScrollToCaret();
                 }
             };
-
             if (this.opRichTextBox.InvokeRequired)
                 this.opRichTextBox.Invoke(handler, e.Data);
         }
 
+        //即时输出错误
+        private delegate void AddErrorHandler(string msg);
+        private void p_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            AddErrorHandler handler = delegate(string msg)
+            {
+                if (msg != null)
+                {
+                    this.opRichTextBox.SelectionColor = Color.Red;
+                    this.opRichTextBox.AppendText(msg + "\n");
+                    this.opRichTextBox.Focus();
+                    this.opRichTextBox.Select(this.opRichTextBox.TextLength, 0);
+                    this.opRichTextBox.ScrollToCaret();
+                    setClientColor(currentIp);
+                }
+            };
+            if (this.opRichTextBox.InvokeRequired)
+                this.opRichTextBox.Invoke(handler, e.Data);
+        }
 
+        //设置客户端列表颜色
+        private void setClientColor(String currentIp = "")
+        {
+            foreach (ListViewItem item in this.clientListView.Items)
+            {
+                if (currentIp == "")
+                {
+                    item.ForeColor = Color.Black;
+                }
+                else
+                {
+                    String ip = item.SubItems[2].Text.ToString();
+                    if (ip == currentIp)
+                    {
+                        item.ForeColor = Color.Red;
+                    }
+                }
+            }
+        }
 
-         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
-         {
-             AboutBox1 aboutBox1 = new AboutBox1();
-             aboutBox1.Show();
-         }
+        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox1 aboutBox1 = new AboutBox1();
+            aboutBox1.Show();
+        }
 
-         private void donateToolStripMenuItem_Click(object sender, EventArgs e)
-         {
-             System.Diagnostics.Process.Start("https://me.alipay.com/liugr");
-         }
+        private void donateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://me.alipay.com/liugr");
+        }
 
+        private void 报告BugToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("mailto:jason.liu@amttgroup.com?Subject=报告Android IDS辅助工具Bug&Body=描述");
+            this.updateOutput("如果没有自动打开Email客户端，请发至jason.liu@amttgroup.com\n");
+        }
     }
 }
