@@ -778,9 +778,9 @@ namespace AdbGUI
                 if (item.Checked)
                 {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.updateOutput("==================" + ip + "==================\n\n");
+                    this.updateOutput("==================" + ip + "==================\n");
                     this.sendMessage(ip, port, cmd);
-                    this.updateOutput("==================END==================\n\n\n");
+                    this.updateOutput("==================END==================\n");
                 }
             }
         }
@@ -903,7 +903,6 @@ namespace AdbGUI
             setClientColor();
             if (checkedClientList.Count == 0)
             {
-                this.updateOutput("请选择客户端\n");
                 return;
             }
             packageName = this.packageNameTextBox.Text;
@@ -929,7 +928,6 @@ namespace AdbGUI
             setClientColor();
             if (checkedClientList.Count == 0)
             {
-                this.updateOutput("请选择客户端\n");
                 return;
             }
             packageName = this.packageNameTextBox.Text;
@@ -949,7 +947,6 @@ namespace AdbGUI
             setClientColor();
             if (checkedClientList.Count == 0)
             {
-                this.updateOutput("请选择客户端\n");
                 return;
             }
             packageName = this.packageNameTextBox.Text;
