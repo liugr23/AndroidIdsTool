@@ -29,6 +29,10 @@ namespace AdbGUI
         private ArrayList checkedClientList = new ArrayList();
         //当前操作的Ip
         private String currentIp = "";
+        //持续进程
+        private Process sustainedProcess = null;
+        //短暂进程
+        private Process process = null;
 
         public Form1()
         {
@@ -306,87 +310,119 @@ namespace AdbGUI
         private void connectClient(String ip)
         {
             currentIp = ip;
-
             this.updateOutput("正在连接" + ip + " ...\n");
 
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "connect " + ip;
-            p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            p.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
-            p.Start();
-            p.BeginOutputReadLine();
-            p.BeginErrorReadLine();
-            p.WaitForExit();
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            //psi.RedirectStandardError = true;
+            psi.FileName = adbPath;
+            psi.CreateNoWindow = true;
+            psi.Arguments = "connect " + ip;
+
+            sustainedProcess = new Process();
+            sustainedProcess.StartInfo = psi;
+            sustainedProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            //sustainedProcess.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
+            sustainedProcess.Start();
+            sustainedProcess.BeginOutputReadLine();
+            //sustainedProcess.BeginErrorReadLine();
+            this.updateOutput("等待前" + ip + " ...\n");
+            sustainedProcess.WaitForExit(10000);
+            this.updateOutput("等待后" + ip + " ...\n");
+            sustainedProcess.Close();
         }
 
-        //连接客户端
+        //批量连接客户端
         private void connectClient()
         {
-            end = false;
-            for (int i = 0; i < checkedClientList.Count; i++)
-            {
-                if (end)
-                {
-                    break;
-                }
-                if (i > 0)
-                {
-                    Thread.Sleep(5000);
-                    this.updateOutput("休眠5秒\n");
-                }
-                String ip = checkedClientList[i].ToString();
-                this.updateOutput("===========" + ip + "=============\n");
-                connectClient(ip);
-                this.updateOutput("========================\n");
-            }
+            String ip = checkedClientList[0].ToString();
+            this.updateOutput("===========" + ip + "=============\n");
+            connectClient(ip);
+            this.updateOutput("==================================\n");      
         }
 
         //关闭连接
         private void disConnectClient(String ip)
         {
-            this.opTextBox.AppendText("正在关闭连接" + ip + " ...\n");
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "disconnect " + ip;
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            if (output != "")
-            {
-                this.opTextBox.AppendText(output + "\n");
-            }
-            else
-            {
-                this.opTextBox.AppendText("关闭连接" + ip + "\n");
-            }
-            p.Close();
+            currentIp = ip;
+            this.updateOutput("正在关闭连接" + ip + " ...\n");
+
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            psi.FileName = adbPath;
+            psi.CreateNoWindow = true;
+            psi.Arguments = "disconnect " + ip;
+
+            process = new Process();
+            process.StartInfo = psi;
+            process.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            process.Start();
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+            process.Close();
+
+            killSustainedProcess();
+        }
+
+        //批量关闭连接
+        private void disConnectClient()
+        {
+            String ip = checkedClientList[0].ToString();
+            this.updateOutput("===========" + ip + "=============\n");
+            disConnectClient(ip);
+            this.updateOutput("==================================\n"); 
         }
 
         //重启客户端
         private void rebootClient(String ip)
         {
-            this.opTextBox.AppendText("正在重启" + ip + "...\n");
-            this.connectClient(ip);
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 reboot";
-            p.Start();
-            //p.WaitForExit();
-            //string output = p.StandardOutput.ReadToEnd();
-            this.opTextBox.AppendText("重启完成。如果失败，请重试。\n");
-            p.Close();
+            currentIp = ip;
+            this.updateOutput("正在重启" + ip + "...\n");
+            //this.connectClient(ip);
+
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+            psi.RedirectStandardError = true;
+            psi.FileName = adbPath;
+            psi.CreateNoWindow = true;
+            psi.Arguments = "-s " + ip + ":5555 reboot";
+
+            process = new Process();
+            process.StartInfo = psi;
+            process.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            process.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            process.Close();
+            killSustainedProcess();
+            this.updateOutput("重启完成。如果失败，请重试。\n");
+        }
+
+        //批量重启客户端
+        private void rebootClient()
+        {
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                rebootClient(ip);
+                this.updateOutput("==================================\n");
+            }
         }
 
         //导出日志
@@ -398,8 +434,10 @@ namespace AdbGUI
                 Directory.CreateDirectory(logDir);
             }
 
+            currentIp = ip;
+            this.updateOutput("正在导出"+ip+"日志...\n");
             this.connectClient(ip);
-            this.opTextBox.AppendText("正在导出日志...\n");
+
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
@@ -407,12 +445,12 @@ namespace AdbGUI
             p.StartInfo.FileName = adbPath;
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.Arguments = "-s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/log " + logDir;
+            p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            p.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
             p.Start();
             p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            this.opTextBox.AppendText("日志已保存在" + logDir + "\n");
             p.Close();
+            this.updateOutput("日志已保存在" + logDir + "\n");
             this.disConnectClient(ip);
         }
 
@@ -540,7 +578,7 @@ namespace AdbGUI
             System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("adb");
             foreach (System.Diagnostics.Process adbProcess in killprocess)
             {
-                // adbProcess.Kill();
+                adbProcess.Kill();
             }
         }
 
@@ -607,16 +645,10 @@ namespace AdbGUI
         {
             setCheckedClient();
             setClientColor();
-            if (checkedClientList.Count == 0)
+            if (checkedClientList.Count == 0 || checkedClientList.Count > 1)
             {
+                this.updateOutput("只支持单客户端连接");
                 return;
-            }
-            if (checkedClientList.Count > 1)
-            {
-                if (MessageBox.Show("连接数大于1，建议使用命令行，继续yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    return;
-                }
             }
             Thread t = new Thread(new ThreadStart(this.connectClient));
             t.Start();
@@ -625,16 +657,15 @@ namespace AdbGUI
         //关闭客户端
         private void button10_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0 || checkedClientList.Count > 1)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.disConnectClient(ip);
-                    this.opTextBox.AppendText("==================END==================\n\n\n");
-                }
+                this.updateOutput("只支持单客户端");
+                return;
             }
+            Thread t = new Thread(new ThreadStart(this.disConnectClient));
+            t.Start();
         }
 
         //批量删除客户端
@@ -686,16 +717,14 @@ namespace AdbGUI
         //批量重启客户端
         private void button9_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.rebootClient(ip);
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                }
+                return;
             }
+            Thread t = new Thread(new ThreadStart(this.rebootClient));
+            t.Start();
         }
 
         //批量导出日志
@@ -859,9 +888,7 @@ namespace AdbGUI
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            this.setCheckedClient();
-            Thread t = new Thread(new ThreadStart(this.test));
-            t.Start();
+            killAdb();
         }
 
         //更新输出信息
@@ -941,6 +968,25 @@ namespace AdbGUI
                     }
                 }
             }
+        }
+
+        //结束adb持续进程
+        private void killSustainedProcess()
+        {
+            if (sustainedProcess!=null)
+            {
+                try
+                {
+                    sustainedProcess.CancelOutputRead();
+                    sustainedProcess.CancelErrorRead();
+                    sustainedProcess.Close();
+                    sustainedProcess = null;
+                }
+                catch
+                {
+                }
+            }
+            killAdb();
         }
 
         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
