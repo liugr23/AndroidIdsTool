@@ -32,7 +32,18 @@ namespace AdbGUI
         //持续进程
         private Process sustainedProcess = null;
         //短暂进程
-        private Process process = null;
+        private Process briefProcess = null;
+        //apk路径
+        private String apkPath = "";
+        //包名
+        private String packageName = "com.amtt.ids";
+        //服务器IP
+        private String serverIp = "192.168.15.114";
+        //启动界面
+        private String appStart = "com.amtt.ids.AppStart";
+        //快速启动界面
+        private String adbStart = "com.amtt.ids.AdbStart";
+
 
         public Form1()
         {
@@ -41,12 +52,11 @@ namespace AdbGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             // 必要文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe") || !System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
             {
-                this.opTextBox.AppendText("错误:adb.exe或AdbWinApi.dll不存在\n");
-                this.opTextBox.AppendText("联系jason.liu@amttgroup.com\n");
+                this.updateOutput("错误:adb.exe或AdbWinApi.dll不存在\n");
+                this.updateOutput("联系jason.liu@amttgroup.com\n");
                 this.operateTabControl.Enabled = false;
             }
             adbPath = System.Environment.CurrentDirectory + @"\adb.exe";
@@ -139,13 +149,42 @@ namespace AdbGUI
             }
 
             //参看根目录下是否有apk
-            String apkPath = System.Environment.CurrentDirectory + @"\Coon.apk";
+            apkPath = System.Environment.CurrentDirectory + @"\Coon.apk";
             if (File.Exists(apkPath))
             {
                 this.apkTextBox.Text = apkPath;
             }
+            packageNameTextBox.Text = packageName;
+            serverIpTextBox.Text = serverIp;
+            appStartTextBox.Text = appStart;
+            adbStartTextBox.Text = adbStart;
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            killSustainedProcess();
+            killBriefProcessProcess();
+            killAdb();
+        }
+
+        //获得cmd进程
+        private Process getProcess()
+        {
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.RedirectStandardError = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            cmd.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
+            cmd.Start();
+            //cmd.StandardInput.AutoFlush = true;
+            cmd.BeginOutputReadLine();
+            cmd.BeginErrorReadLine();
+            return cmd;
+        }
         //保存数据
         private void addClient(String ip, String name)
         {
@@ -311,35 +350,19 @@ namespace AdbGUI
         {
             currentIp = ip;
             this.updateOutput("正在连接" + ip + " ...\n");
-
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            //psi.RedirectStandardError = true;
-            psi.FileName = adbPath;
-            psi.CreateNoWindow = true;
-            psi.Arguments = "connect " + ip;
-
-            sustainedProcess = new Process();
-            sustainedProcess.StartInfo = psi;
-            sustainedProcess.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            //sustainedProcess.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
-            sustainedProcess.Start();
-            sustainedProcess.BeginOutputReadLine();
-            //sustainedProcess.BeginErrorReadLine();
-            this.updateOutput("等待前" + ip + " ...\n");
-            sustainedProcess.WaitForExit(10000);
-            this.updateOutput("等待后" + ip + " ...\n");
-            sustainedProcess.Close();
+            String order = adbPath + " connect " + ip;
+            sustainedProcess = getProcess();
+            sustainedProcess.StandardInput.WriteLine(order);
         }
 
         //批量连接客户端
         private void connectClient()
         {
+            killSustainedProcess();
+            killAdb();
             String ip = checkedClientList[0].ToString();
-            this.updateOutput("===========" + ip + "=============\n");
-            connectClient(ip);
-            this.updateOutput("==================================\n");      
+            this.updateOutput("==============" + ip + "===============\n");
+            connectClient(ip);     
         }
 
         //关闭连接
@@ -347,23 +370,10 @@ namespace AdbGUI
         {
             currentIp = ip;
             this.updateOutput("正在关闭连接" + ip + " ...\n");
-
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            psi.FileName = adbPath;
-            psi.CreateNoWindow = true;
-            psi.Arguments = "disconnect " + ip;
-
-            process = new Process();
-            process.StartInfo = psi;
-            process.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            process.Start();
-            process.BeginOutputReadLine();
-            process.WaitForExit();
+            String order = adbPath + " disconnect " + ip;
+            Process process = getProcess();
+            process.StandardInput.WriteLine(order);
             process.Close();
-
-            killSustainedProcess();
         }
 
         //批量关闭连接
@@ -371,35 +381,26 @@ namespace AdbGUI
         {
             String ip = checkedClientList[0].ToString();
             this.updateOutput("===========" + ip + "=============\n");
-            disConnectClient(ip);
-            this.updateOutput("==================================\n"); 
+            disConnectClient(ip); 
         }
 
         //重启客户端
         private void rebootClient(String ip)
         {
-            currentIp = ip;
             this.updateOutput("正在重启" + ip + "...\n");
-            //this.connectClient(ip);
 
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError = true;
-            psi.FileName = adbPath;
-            psi.CreateNoWindow = true;
-            psi.Arguments = "-s " + ip + ":5555 reboot";
+            String order = "";
+            currentIp = ip;
+            killAdb();
+            Thread.Sleep(1000);
 
-            process = new Process();
-            process.StartInfo = psi;
-            process.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            process.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
+            order = adbPath + " connect " + ip;
+            Process process = getProcess();
+            process.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 reboot";
+            process.StandardInput.WriteLine(order);
             process.Close();
-            killSustainedProcess();
             this.updateOutput("重启完成。如果失败，请重试。\n");
         }
 
@@ -421,7 +422,6 @@ namespace AdbGUI
                 String ip = checkedClientList[i].ToString();
                 this.updateOutput("===========" + ip + "=============\n");
                 rebootClient(ip);
-                this.updateOutput("==================================\n");
             }
         }
 
@@ -436,24 +436,45 @@ namespace AdbGUI
 
             currentIp = ip;
             this.updateOutput("正在导出"+ip+"日志...\n");
-            this.connectClient(ip);
 
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/log " + logDir;
-            p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
-            p.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
-            p.Start();
-            p.WaitForExit();
-            p.Close();
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/log " + logDir;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
             this.updateOutput("日志已保存在" + logDir + "\n");
-            this.disConnectClient(ip);
         }
 
+        //批量导出日志
+        private void exportLog()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                exportLog(ip);
+            }
+        }
 
         //导出Debug信息
         private void exportDebug(String ip)
@@ -464,112 +485,237 @@ namespace AdbGUI
                 Directory.CreateDirectory(debugDir);
             }
 
-            this.connectClient(ip);
-            this.opTextBox.AppendText("正在Debug信息...\n");
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/debug " + debugDir;
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            this.opTextBox.AppendText("debug信息已保存在" + debugDir + "\n");
-            p.Close();
-            this.disConnectClient(ip);
+            currentIp = ip;
+            this.updateOutput("正在导出" + ip + "Debug信息...\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/debug " + debugDir;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
+            this.updateOutput("debug信息已保存在" + debugDir + "\n");
+        }
+
+        //批量导出debug信息
+        private void exportDebug()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                exportDebug(ip);
+            }
         }
 
         //安装应用
-        private void installApp(String ip, String appPath)
+        private void installApp(String ip)
         {
-            this.opTextBox.AppendText("正在安装应用" + ip + " ...\n");
-            this.opTextBox.AppendText("如果长时间未反应，请手动安装。\n");
-            this.opTextBox.AppendText("如果安装失败，请尝试卸载旧应用。\n");
-            this.connectClient(ip);
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = false;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 install -r " + appPath;
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            //string error = p.StandardError.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            //this.opTextBox.AppendText(error + "\n");
-            p.Close();
-            this.disConnectClient(ip);
+            currentIp = ip;
+            this.updateOutput("正在安装应用" + ip + " ...\n");
+            this.updateOutput("如果安装失败，请尝试卸载旧应用。\n");
+            this.updateOutput("如果长时间未反应，请手动安装。\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 install -r " + apkPath;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
+            this.updateOutput("安装完成\n");
+        }
+
+        //批量安装应用
+        private void installApp()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                installApp(ip);
+            }
         }
 
         //卸载应用
-        private void uninstallApp(String ip, String package)
+        private void uninstallApp(String ip)
         {
-            this.opTextBox.AppendText("正在卸载旧应用" + package + " ...\n");
-            this.connectClient(ip);
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 uninstall " + package;
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            string error = p.StandardError.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            this.opTextBox.AppendText(error + "\n");
-            p.Close();
-            this.disConnectClient(ip);
+            currentIp = ip;
+            this.updateOutput("正在卸载应用" + ip + " ...\n");
+            this.updateOutput("如果长时间未反应，请手动卸载。\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 uninstall " + packageName;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
+            this.updateOutput("卸载完成\n");
+        }
+
+        //批量卸载应用
+        private void uninstallApp()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                uninstallApp(ip);
+            }
         }
 
         //启动应用
         private void startApp(String ip)
         {
-            this.opTextBox.AppendText("正在启动应用...\n");
-            this.connectClient(ip);
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = false;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 shell am start -n com.amtt.ids/com.amtt.ids.AppStart";
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            //string error = p.StandardError.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            //this.opTextBox.AppendText(error + "\n");
-            p.Close();
-            this.disConnectClient(ip);
+            currentIp = ip;
+            this.updateOutput("正在启动应用" + ip + " ...\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 shell am start -n "+packageName+"/"+appStart;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
+            this.updateOutput("启动完成\n");
+        }
+
+        //批量启动应用
+        private void startApp()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                startApp(ip);
+            }
         }
 
         //快速启动
-        private void quickStartApp(String ip, String clientName, String serverIp)
+        private void quickStartApp(String ip, String clientName)
         {
-            this.opTextBox.AppendText("正在快速启动应用...\n");
-            this.connectClient(ip);
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.FileName = adbPath;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.Arguments = "-s " + ip + ":5555 shell am start -n com.amtt.ids/com.amtt.ids.AdbStart --es clientName '" + clientName + "'" + " --es serverIp '" + serverIp + "'";
-            p.Start();
-            p.WaitForExit();
-            string output = p.StandardOutput.ReadToEnd();
-            string error = p.StandardError.ReadToEnd();
-            this.opTextBox.AppendText(output + "\n");
-            this.opTextBox.AppendText(error + "\n");
-            p.Close();
-            this.disConnectClient(ip);
+            currentIp = ip;
+            this.updateOutput("正在快速启动应用" + ip + " ...\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " -s " + ip + ":5555 shell am start -n "+packageName+"/"+adbStart+" --es clientName '" + clientName + "'" + " --es serverIp '" + serverIp + "'";
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            order = adbPath + " disconnect " + ip;
+            this.updateOutput("快速启动完成\n");
+        }
+
+        //批量快速启动应用
+        private void quickStartApp()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                String clientName = "";
+                foreach (ListViewItem item in clientListView.Items)
+                {
+                    if (ip == item.SubItems[2].Text.ToString())
+                    {
+                        clientName = item.SubItems[1].Text.ToString();
+                    }
+                }
+                this.updateOutput("===========" + ip + "=============\n");
+                quickStartApp(ip,clientName);
+            }
         }
 
         //结束ADB进程
@@ -585,7 +731,7 @@ namespace AdbGUI
         //发送命令
         private void sendMessage(String ip, int port, String msg)
         {
-            this.opTextBox.AppendText(ip + "----发送命令" + msg + "\n");
+            this.updateOutput("发送命令--" + msg + "至"+ip+"\n");
             TcpClient client = new TcpClient(ip, port);
             NetworkStream stream = client.GetStream();
             StreamWriter writer = new StreamWriter(stream);
@@ -596,14 +742,13 @@ namespace AdbGUI
             client.Close();
         }
 
-        //按钮事件
 
         //发送开发命令
         private void button14_Click(object sender, EventArgs e)
         {
             //保护危险动作
             ArrayList protectList = new ArrayList();
-            //protectList.Add("resetApp");
+            protectList.Add("resetApp");
 
             String cmd = this.cmdComboBox.SelectedValue.ToString();
 
@@ -616,7 +761,7 @@ namespace AdbGUI
             {
                 if (protectList.IndexOf(cmd) != -1)
                 {
-                    MessageBox.Show("危险操作!!!请在自定义框输入'" + cmd + "'再发送");
+                    this.updateOutput("危险操作!!!请在自定义框输入'" + cmd + "'再发送\n");
                     return;
                 }
             }
@@ -633,9 +778,9 @@ namespace AdbGUI
                 if (item.Checked)
                 {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.updateOutput("==================" + ip + "==================\n\n");
                     this.sendMessage(ip, port, cmd);
-                    this.opTextBox.AppendText("==================END==================\n\n\n");
+                    this.updateOutput("==================END==================\n\n\n");
                 }
             }
         }
@@ -647,7 +792,7 @@ namespace AdbGUI
             setClientColor();
             if (checkedClientList.Count == 0 || checkedClientList.Count > 1)
             {
-                this.updateOutput("只支持单客户端连接");
+                this.updateOutput("只支持单客户端连接\n");
                 return;
             }
             Thread t = new Thread(new ThreadStart(this.connectClient));
@@ -661,7 +806,7 @@ namespace AdbGUI
             setClientColor();
             if (checkedClientList.Count == 0 || checkedClientList.Count > 1)
             {
-                this.updateOutput("只支持单客户端");
+                this.updateOutput("只支持单客户端\n");
                 return;
             }
             Thread t = new Thread(new ThreadStart(this.disConnectClient));
@@ -682,7 +827,7 @@ namespace AdbGUI
                 if (item.Checked)
                 {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("从列表中删除" + ip + "\n");
+                    this.updateOutput("从列表中删除" + ip + "\n");
                     appConf.AppSettings.Settings.Remove(ip);
                 }
 
@@ -695,23 +840,21 @@ namespace AdbGUI
         //批量安装客户端
         private void button8_Click(object sender, EventArgs e)
         {
-            String appPath = this.apkTextBox.Text;
-            if (appPath == "")
+            apkPath = this.apkTextBox.Text;
+            if (apkPath == "")
             {
-                MessageBox.Show("请选择应用");
+                MessageBox.Show("请选择应用\n");
                 return;
             }
 
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.installApp(ip, appPath);
-                    this.opTextBox.AppendText("==================END==================\n\n\n");
-                }
+                return;
             }
+            Thread t = new Thread(new ThreadStart(this.installApp));
+            t.Start();
         }
 
         //批量重启客户端
@@ -730,71 +873,105 @@ namespace AdbGUI
         //批量导出日志
         private void button16_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.exportLog(ip);
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                }
+                return;
             }
+            Thread t = new Thread(new ThreadStart(this.exportLog));
+            t.Start();
+        }
+
+        //导出debug信息
+        private void button11_Click(object sender, EventArgs e)
+        {
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
+            {
+                return;
+            }
+            Thread t = new Thread(new ThreadStart(this.exportDebug));
+            t.Start();
         }
 
         //批量启动应用
         private void button19_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.startApp(ip);
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                }
+                this.updateOutput("请选择客户端\n");
+                return;
             }
+            packageName = this.packageNameTextBox.Text;
+            if (packageName == "")
+            {
+                this.updateOutput("请输入包名\n");
+                return;
+            }
+            appStart = appStartTextBox.Text;
+            if (appStart == "")
+            {
+                this.updateOutput("请输入启动界面\n");
+                return;
+            }
+            Thread t = new Thread(new ThreadStart(this.startApp));
+            t.Start();
         }
 
         //批量卸载应用
         private void button20_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in clientListView.Items)
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.uninstallApp(ip, "com.amtt.ids");
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                    this.opTextBox.AppendText("休眠10000毫秒.请勿操作！！！");
-                    Thread.Sleep(10000);
-                }
+                this.updateOutput("请选择客户端\n");
+                return;
             }
+            packageName = this.packageNameTextBox.Text;
+            if (packageName == "")
+            {
+                this.updateOutput("请输入包名\n");
+                return;
+            }
+            Thread t = new Thread(new ThreadStart(this.uninstallApp));
+            t.Start();
         }
 
         //批量快速启动
         private void button21_Click(object sender, EventArgs e)
         {
-            String serverIp = this.sIpTextBox.Text;
-            if (serverIp == "")
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
             {
-                MessageBox.Show("服务器IP有误！");
+                this.updateOutput("请选择客户端\n");
                 return;
             }
-
-            foreach (ListViewItem item in clientListView.Items)
+            packageName = this.packageNameTextBox.Text;
+            if (packageName == "")
             {
-                if (item.Checked)
-                {
-                    String name = item.SubItems[1].Text.ToString();
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.quickStartApp(ip, name, serverIp);
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                }
+                this.updateOutput("请输入包名\n");
+                return;
             }
+            serverIp = this.serverIpTextBox.Text;
+            if (serverIp == "")
+            {
+                this.updateOutput("请输入服务器IP\n");
+                return;
+            }
+            adbStart = adbStartTextBox.Text;
+            if (adbStart == "")
+            {
+                this.updateOutput("请输入快速启动界面\n");
+                return;
+            }
+            Thread t = new Thread(new ThreadStart(this.quickStartApp));
+            t.Start();
         }
 
         //即时修改切换效果
@@ -834,16 +1011,15 @@ namespace AdbGUI
                 if (item.Checked)
                 {
                     String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
+                    this.updateOutput("==================" + ip + "==================\n\n");
                     this.sendMessage(ip, port, cmd);
-                    this.opTextBox.AppendText("==================END==================\n\n\n");
+                    this.updateOutput("==================END==================\n\n\n");
                 }
             }
 
 
         }
 
-        //
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("https://me.alipay.com/liugr");
@@ -854,20 +1030,7 @@ namespace AdbGUI
 
         }
 
-        //导出debug信息
-        private void button11_Click(object sender, EventArgs e)
-        {
-            foreach (ListViewItem item in clientListView.Items)
-            {
-                if (item.Checked)
-                {
-                    String ip = item.SubItems[2].Text.ToString();
-                    this.opTextBox.AppendText("==================" + ip + "==================\n\n");
-                    this.exportDebug(ip);
-                    this.opTextBox.AppendText("==================END=========================\n\n\n");
-                }
-            }
-        }
+
 
         //获得选中客户端列表
         private void setCheckedClient()
@@ -888,7 +1051,7 @@ namespace AdbGUI
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            killAdb();
+            System.Diagnostics.Process.Start("cmd");
         }
 
         //更新输出信息
@@ -897,16 +1060,23 @@ namespace AdbGUI
         private void updateOutput(string info)
         {
             if (this.opRichTextBox.InvokeRequired)//当前线程不是创建线程
+            {
                 this.opRichTextBox.Invoke(new InvokeCallback(updateOutput), new object[] { info });//回调
+            }
             else//当前线程是创建线程（界面线程）
+            {
                 this.opRichTextBox.AppendText(info);//直接更新
+                this.opRichTextBox.Focus();
+                this.opRichTextBox.Select(this.opRichTextBox.TextLength, 0);
+                this.opRichTextBox.ScrollToCaret();
+            }
         }
 
         private void test()
         {
-            updateOutput("休眠6秒");
+            updateOutput("休眠6秒\n");
             Thread.Sleep(6000);
-            updateOutput("启动");
+            updateOutput("启动\n");
             updateOutput(checkedClientList[0].ToString());
         }
 
@@ -975,18 +1145,24 @@ namespace AdbGUI
         {
             if (sustainedProcess!=null)
             {
-                try
-                {
                     sustainedProcess.CancelOutputRead();
                     sustainedProcess.CancelErrorRead();
                     sustainedProcess.Close();
                     sustainedProcess = null;
-                }
-                catch
-                {
-                }
+
             }
-            killAdb();
+        }
+
+        //结束adb短暂进程
+        private void killBriefProcessProcess()
+        {
+            if (briefProcess != null)
+            {
+                briefProcess.CancelOutputRead();
+                briefProcess.CancelErrorRead();
+                briefProcess.Close();
+                briefProcess = null;
+            }
         }
 
         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1004,6 +1180,23 @@ namespace AdbGUI
         {
             System.Diagnostics.Process.Start("mailto:jason.liu@amttgroup.com?Subject=报告Android IDS辅助工具Bug&Body=描述");
             this.updateOutput("如果没有自动打开Email客户端，请发至jason.liu@amttgroup.com\n");
+        }
+
+        //终止当前操作
+        private void button23_Click(object sender, EventArgs e)
+        {
+            this.killBriefProcessProcess();
+        }
+        //终止所有操作
+        private void button22_Click(object sender, EventArgs e)
+        {
+            this.killSustainedProcess();
+            this.killAdb();
+        }
+        //清空输出
+        private void button15_Click(object sender, EventArgs e)
+        {
+            this.opRichTextBox.Text = "";
         }
     }
 }
