@@ -58,7 +58,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.imageTextBox = new System.Windows.Forms.TextBox();
-            this.soundTextBox = new System.Windows.Forms.TextBox();
+            this.musicTextBox = new System.Windows.Forms.TextBox();
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
@@ -101,18 +101,18 @@
             this.devPanel = new System.Windows.Forms.Panel();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.deployPanel = new System.Windows.Forms.Panel();
+            this.adbStartTextBox = new System.Windows.Forms.TextBox();
+            this.appStartTextBox = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.packageNameTextBox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button22 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.packageNameTextBox = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.appStartTextBox = new System.Windows.Forms.TextBox();
-            this.adbStartTextBox = new System.Windows.Forms.TextBox();
+            this.button22 = new System.Windows.Forms.Button();
+            this.button15 = new System.Windows.Forms.Button();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -368,13 +368,13 @@
             this.imageTextBox.Size = new System.Drawing.Size(355, 20);
             this.imageTextBox.TabIndex = 27;
             // 
-            // soundTextBox
+            // musicTextBox
             // 
-            this.soundTextBox.Location = new System.Drawing.Point(49, 44);
-            this.soundTextBox.Name = "soundTextBox";
-            this.soundTextBox.ReadOnly = true;
-            this.soundTextBox.Size = new System.Drawing.Size(355, 20);
-            this.soundTextBox.TabIndex = 28;
+            this.musicTextBox.Location = new System.Drawing.Point(49, 44);
+            this.musicTextBox.Name = "musicTextBox";
+            this.musicTextBox.ReadOnly = true;
+            this.musicTextBox.Size = new System.Drawing.Size(355, 20);
+            this.musicTextBox.TabIndex = 28;
             // 
             // button12
             // 
@@ -807,6 +807,54 @@
             this.deployPanel.Size = new System.Drawing.Size(585, 212);
             this.deployPanel.TabIndex = 33;
             // 
+            // adbStartTextBox
+            // 
+            this.adbStartTextBox.Location = new System.Drawing.Point(93, 131);
+            this.adbStartTextBox.Name = "adbStartTextBox";
+            this.adbStartTextBox.Size = new System.Drawing.Size(306, 20);
+            this.adbStartTextBox.TabIndex = 33;
+            // 
+            // appStartTextBox
+            // 
+            this.appStartTextBox.Location = new System.Drawing.Point(68, 97);
+            this.appStartTextBox.Name = "appStartTextBox";
+            this.appStartTextBox.Size = new System.Drawing.Size(332, 20);
+            this.appStartTextBox.TabIndex = 32;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(9, 134);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 13);
+            this.label17.TabIndex = 31;
+            this.label17.Text = "快速启动界面";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(9, 102);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(55, 13);
+            this.label16.TabIndex = 30;
+            this.label16.Text = "启动界面";
+            // 
+            // packageNameTextBox
+            // 
+            this.packageNameTextBox.Location = new System.Drawing.Point(40, 37);
+            this.packageNameTextBox.Name = "packageNameTextBox";
+            this.packageNameTextBox.Size = new System.Drawing.Size(360, 20);
+            this.packageNameTextBox.TabIndex = 29;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 40);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(31, 13);
+            this.label6.TabIndex = 28;
+            this.label6.Text = "包名";
+            // 
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
@@ -822,7 +870,7 @@
             this.panel3.Controls.Add(this.button18);
             this.panel3.Controls.Add(this.label7);
             this.panel3.Controls.Add(this.imageTextBox);
-            this.panel3.Controls.Add(this.soundTextBox);
+            this.panel3.Controls.Add(this.musicTextBox);
             this.panel3.Controls.Add(this.button12);
             this.panel3.Controls.Add(this.button13);
             this.panel3.Controls.Add(this.label8);
@@ -845,15 +893,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "操作";
             // 
-            // button15
+            // button23
             // 
-            this.button15.Location = new System.Drawing.Point(503, 268);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(75, 23);
-            this.button15.TabIndex = 40;
-            this.button15.Text = "清空输出";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
+            this.button23.Location = new System.Drawing.Point(324, 268);
+            this.button23.Name = "button23";
+            this.button23.Size = new System.Drawing.Size(75, 23);
+            this.button23.TabIndex = 42;
+            this.button23.Text = "终止操作";
+            this.button23.UseVisualStyleBackColor = true;
+            this.button23.Click += new System.EventHandler(this.button23_Click);
             // 
             // button22
             // 
@@ -865,63 +913,15 @@
             this.button22.UseVisualStyleBackColor = true;
             this.button22.Click += new System.EventHandler(this.button22_Click);
             // 
-            // button23
+            // button15
             // 
-            this.button23.Location = new System.Drawing.Point(324, 268);
-            this.button23.Name = "button23";
-            this.button23.Size = new System.Drawing.Size(75, 23);
-            this.button23.TabIndex = 42;
-            this.button23.Text = "终止操作";
-            this.button23.UseVisualStyleBackColor = true;
-            this.button23.Click += new System.EventHandler(this.button23_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 40);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(31, 13);
-            this.label6.TabIndex = 28;
-            this.label6.Text = "包名";
-            // 
-            // packageNameTextBox
-            // 
-            this.packageNameTextBox.Location = new System.Drawing.Point(40, 37);
-            this.packageNameTextBox.Name = "packageNameTextBox";
-            this.packageNameTextBox.Size = new System.Drawing.Size(360, 20);
-            this.packageNameTextBox.TabIndex = 29;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(9, 102);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(55, 13);
-            this.label16.TabIndex = 30;
-            this.label16.Text = "启动界面";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(9, 134);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(79, 13);
-            this.label17.TabIndex = 31;
-            this.label17.Text = "快速启动界面";
-            // 
-            // appStartTextBox
-            // 
-            this.appStartTextBox.Location = new System.Drawing.Point(68, 97);
-            this.appStartTextBox.Name = "appStartTextBox";
-            this.appStartTextBox.Size = new System.Drawing.Size(332, 20);
-            this.appStartTextBox.TabIndex = 32;
-            // 
-            // adbStartTextBox
-            // 
-            this.adbStartTextBox.Location = new System.Drawing.Point(93, 131);
-            this.adbStartTextBox.Name = "adbStartTextBox";
-            this.adbStartTextBox.Size = new System.Drawing.Size(306, 20);
-            this.adbStartTextBox.TabIndex = 33;
+            this.button15.Location = new System.Drawing.Point(503, 268);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(75, 23);
+            this.button15.TabIndex = 40;
+            this.button15.Text = "清空输出";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
             // Form1
             // 
@@ -990,7 +990,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox imageTextBox;
-        private System.Windows.Forms.TextBox soundTextBox;
+        private System.Windows.Forms.TextBox musicTextBox;
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button16;

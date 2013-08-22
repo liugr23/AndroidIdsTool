@@ -43,6 +43,10 @@ namespace AdbGUI
         private String appStart = "com.amtt.ids.AppStart";
         //快速启动界面
         private String adbStart = "com.amtt.ids.AdbStart";
+        //背景图片路径
+        private String imagePath = "";
+        //背景音乐路径
+        private String musicPath = "";
 
 
         public Form1()
@@ -52,6 +56,17 @@ namespace AdbGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            if (System.Environment.CurrentDirectory.IndexOf(" ") != -1 || IsChina(System.Environment.CurrentDirectory))
+            {
+                if (MessageBox.Show("程序路径含有空格或者中文，可能引起未知问题，忽略yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            //显示列表
+            this.showList();
+
             // 必要文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe") || !System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
             {
@@ -59,16 +74,67 @@ namespace AdbGUI
                 this.updateOutput("联系jason.liu@amttgroup.com\n");
                 this.operateTabControl.Enabled = false;
             }
+            //adb路径
             adbPath = System.Environment.CurrentDirectory + @"\adb.exe";
+            if (System.IO.File.Exists(@"E:\Free\android\sdk\platform-tools\adb.exe"))
+            {
+                adbPath = @"E:\Free\android\sdk\platform-tools\adb.exe";
+            }
 
-            //显示列表
-            this.showList();
+            //命令列表
+            ArrayList list = new ArrayList();
+            list.Add(new DictionaryEntry("debug", "Debug"));
+            list.Add(new DictionaryEntry("screenshot", "截图"));
+            list.Add(new DictionaryEntry("restartApp", "重启应用"));
+            list.Add(new DictionaryEntry("reboot", "重启"));
+            list.Add(new DictionaryEntry("stopService", "关闭服务"));
+            list.Add(new DictionaryEntry("startProtect", "开启任务保护"));
+            list.Add(new DictionaryEntry("stopProtect", "关闭任务保护"));
+            list.Add(new DictionaryEntry("startStartup", "开启开机启动"));
+            list.Add(new DictionaryEntry("stopStartup", "关闭开机启动"));
+            list.Add(new DictionaryEntry("restartTask", "重启任务"));
+            list.Add(new DictionaryEntry("resetData", "重置客户端任务数据"));
+            list.Add(new DictionaryEntry("resetApp", "重置客户端配置文件*"));
+            this.cmdComboBox.DataSource = list;
+            this.cmdComboBox.DisplayMember = "Value";//显示的Text值
+            this.cmdComboBox.ValueMember = "Key";// 实际value值
 
+            //切换效果列表
+            ArrayList effectList = new ArrayList();
+            effectList.Add(new DictionaryEntry("e0", "无"));
+            effectList.Add(new DictionaryEntry("e1001", "立方体1"));
+            effectList.Add(new DictionaryEntry("e1002", "擦除-上-下2*"));
+            effectList.Add(new DictionaryEntry("e1003", "旋转4*"));
+            effectList.Add(new DictionaryEntry("e1004", "擦除-左-右7*"));
+            effectList.Add(new DictionaryEntry("e1005", "切出11*"));
+            effectList.Add(new DictionaryEntry("e1006", "翻页15"));
+            effectList.Add(new DictionaryEntry("e1007", "淡出17*"));
+            effectList.Add(new DictionaryEntry("e1008", "淡入21*"));
+            effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
+            effectList.Add(new DictionaryEntry("e2001", "星形0"));
+            effectList.Add(new DictionaryEntry("e2002", "溶解10"));
+            effectList.Add(new DictionaryEntry("e2003", "菱形5"));
+            effectList.Add(new DictionaryEntry("e2004", "左右百叶窗6"));
+            effectList.Add(new DictionaryEntry("e2005", "翻页3"));
+            effectList.Add(new DictionaryEntry("e2006", "分割13"));
+            effectList.Add(new DictionaryEntry("e2007", "上下百叶窗20"));
+            effectList.Add(new DictionaryEntry("e2008", "溶解16"));
+            effectList.Add(new DictionaryEntry("e2009", "擦除--左上--右下14"));
+            effectList.Add(new DictionaryEntry("e2010", "收缩18"));
+            effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
+            effectList.Add(new DictionaryEntry("e2011", "超级淡入21"));
+            effectList.Add(new DictionaryEntry("e2012", "超级淡出17"));
+            effectList.Add(new DictionaryEntry("e2013", "超级切出11"));
+            effectList.Add(new DictionaryEntry("e2014", "超级旋转4"));
+            effectList.Add(new DictionaryEntry("e2015", "超级擦除-左-右7"));
+            effectList.Add(new DictionaryEntry("e2016", "超级擦除-上-下2"));
+            this.effectComboBox.DataSource = effectList;
+            this.effectComboBox.DisplayMember = "Value";//显示的Text值
+            this.effectComboBox.ValueMember = "Key";// 实际value值
+
+            //高级模式
             if (System.IO.File.Exists(@"jason.txt"))
             {
-                adbPath = @"adb.exe";
-                //开发者选项
-                this.devPanel.Enabled = true;
                 String txt = "";
                 StreamReader sr = new StreamReader(@"jason.txt");
                 while (!sr.EndOfStream)
@@ -90,63 +156,13 @@ namespace AdbGUI
                         }
                     }
                 }
-
-                //命令列表
-                ArrayList list = new ArrayList();
-                list.Add(new DictionaryEntry("debug", "Debug"));
-                list.Add(new DictionaryEntry("screenshot", "截图"));
-                list.Add(new DictionaryEntry("restartApp", "重启应用"));
-                list.Add(new DictionaryEntry("reboot", "重启"));
-                list.Add(new DictionaryEntry("stopService", "关闭服务"));
-                list.Add(new DictionaryEntry("startProtect", "开启任务保护"));
-                list.Add(new DictionaryEntry("stopProtect", "关闭任务保护"));
-                list.Add(new DictionaryEntry("startStartup", "开启开机启动"));
-                list.Add(new DictionaryEntry("stopStartup", "关闭开机启动"));
-                list.Add(new DictionaryEntry("restartTask", "重启任务"));
-                list.Add(new DictionaryEntry("resetData", "重置客户端任务数据"));
-                list.Add(new DictionaryEntry("resetApp", "重置客户端配置文件*"));
-                this.cmdComboBox.DataSource = list;
-                this.cmdComboBox.DisplayMember = "Value";//显示的Text值
-                this.cmdComboBox.ValueMember = "Key";// 实际value值
-
-                //切换效果列表
-                ArrayList effectList = new ArrayList();
-                effectList.Add(new DictionaryEntry("e0", "无"));
-                effectList.Add(new DictionaryEntry("e1001", "立方体1"));
-                effectList.Add(new DictionaryEntry("e1002", "擦除-上-下2*"));
-                effectList.Add(new DictionaryEntry("e1003", "旋转4*"));
-                effectList.Add(new DictionaryEntry("e1004", "擦除-左-右7*"));
-                effectList.Add(new DictionaryEntry("e1005", "切出11*"));
-                effectList.Add(new DictionaryEntry("e1006", "翻页15"));
-                effectList.Add(new DictionaryEntry("e1007", "淡出17*"));
-                effectList.Add(new DictionaryEntry("e1008", "淡入21*"));
-                effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
-                effectList.Add(new DictionaryEntry("e2001", "星形0"));
-                effectList.Add(new DictionaryEntry("e2002", "溶解10"));
-                effectList.Add(new DictionaryEntry("e2003", "菱形5"));
-                effectList.Add(new DictionaryEntry("e2004", "左右百叶窗6"));
-                effectList.Add(new DictionaryEntry("e2005", "翻页3"));
-                effectList.Add(new DictionaryEntry("e2006", "分割13"));
-                effectList.Add(new DictionaryEntry("e2007", "上下百叶窗20"));
-                effectList.Add(new DictionaryEntry("e2008", "溶解16"));
-                effectList.Add(new DictionaryEntry("e2009", "擦除--左上--右下14"));
-                effectList.Add(new DictionaryEntry("e2010", "收缩18"));
-                effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
-                effectList.Add(new DictionaryEntry("e2011", "超级淡入21"));
-                effectList.Add(new DictionaryEntry("e2012", "超级淡出17"));
-                effectList.Add(new DictionaryEntry("e2013", "超级切出11"));
-                effectList.Add(new DictionaryEntry("e2014", "超级旋转4"));
-                effectList.Add(new DictionaryEntry("e2015", "超级擦除-左-右7"));
-                effectList.Add(new DictionaryEntry("e2016", "超级擦除-上-下2"));
-
-                this.effectComboBox.DataSource = effectList;
-                this.effectComboBox.DisplayMember = "Value";//显示的Text值
-                this.effectComboBox.ValueMember = "Key";// 实际value值
             }
-            else
-            {
-                this.devPanel.Enabled = false;
-            }
+
+            //默认值
+            packageNameTextBox.Text = packageName;
+            serverIpTextBox.Text = serverIp;
+            appStartTextBox.Text = appStart;
+            adbStartTextBox.Text = adbStart;
 
             //参看根目录下是否有apk
             apkPath = System.Environment.CurrentDirectory + @"\Coon.apk";
@@ -154,10 +170,17 @@ namespace AdbGUI
             {
                 this.apkTextBox.Text = apkPath;
             }
-            packageNameTextBox.Text = packageName;
-            serverIpTextBox.Text = serverIp;
-            appStartTextBox.Text = appStart;
-            adbStartTextBox.Text = adbStart;
+            //定制
+            imagePath = System.Environment.CurrentDirectory + @"\bg.jpg";
+            if (File.Exists(imagePath))
+            {
+                this.imageTextBox.Text = imagePath;
+            }
+            musicPath = System.Environment.CurrentDirectory + @"\bg.mp3";
+            if (File.Exists(musicPath))
+            {
+                this.musicTextBox.Text = musicPath;
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -341,7 +364,7 @@ namespace AdbGUI
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string path = openFileDialog.FileName;
-                this.soundTextBox.Text = path;
+                this.musicTextBox.Text = path;
             }
         }
 
@@ -450,6 +473,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("日志已保存在" + logDir + "\n");
         }
 
@@ -501,6 +525,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("debug信息已保存在" + debugDir + "\n");
         }
 
@@ -548,6 +573,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("安装完成\n");
         }
 
@@ -594,6 +620,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("卸载完成\n");
         }
 
@@ -639,6 +666,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("启动完成\n");
         }
 
@@ -684,6 +712,7 @@ namespace AdbGUI
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
             this.updateOutput("快速启动完成\n");
         }
 
@@ -718,6 +747,59 @@ namespace AdbGUI
             }
         }
 
+
+        //定制
+        private void build(String ip)
+        {
+            currentIp = ip;
+            this.updateOutput("正在定制应用" + ip + " ...\n");
+
+            if (briefProcess == null)
+            {
+                briefProcess = getProcess();
+            }
+
+            String order = "";
+            order = adbPath + " connect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            Thread.Sleep(1000);
+            if(imagePath != ""){
+                order = adbPath + " -s " + ip + ":5555 push \"" + imagePath + "\" /data/data/" + packageName + "/files/image/";
+                briefProcess.StandardInput.WriteLine(order);
+                Thread.Sleep(1000);
+            }
+            if (musicPath != "")
+            {
+                order = adbPath + " -s " + ip + ":5555 push \"" + musicPath + "\" /data/data/" + packageName + "/files/sound/";
+                briefProcess.StandardInput.WriteLine(order);
+                Thread.Sleep(1000);
+            }
+            order = adbPath + " disconnect " + ip;
+            briefProcess.StandardInput.WriteLine(order);
+            this.updateOutput("定制完成\n");
+        }
+        //批量定制
+        private void build()
+        {
+            killBriefProcessProcess();
+            killAdb();
+            end = false;
+            for (int i = 0; i < checkedClientList.Count; i++)
+            {
+                if (i > 0)
+                {
+                    this.updateOutput("休眠5秒\n");
+                    Thread.Sleep(5000);
+                }
+                if (end)
+                {
+                    break;
+                }
+                String ip = checkedClientList[i].ToString();
+                this.updateOutput("===========" + ip + "=============\n");
+                build(ip);
+            }
+        }
         //结束ADB进程
         private void killAdb()
         {
@@ -790,7 +872,7 @@ namespace AdbGUI
         {
             setCheckedClient();
             setClientColor();
-            if (checkedClientList.Count == 0 || checkedClientList.Count > 1)
+            if (checkedClientList.Count != 1)
             {
                 this.updateOutput("只支持单客户端连接\n");
                 return;
@@ -830,7 +912,6 @@ namespace AdbGUI
                     this.updateOutput("从列表中删除" + ip + "\n");
                     appConf.AppSettings.Settings.Remove(ip);
                 }
-
             }
             appConf.Save();
             ConfigurationManager.RefreshSection("appSettings");
@@ -1024,7 +1105,26 @@ namespace AdbGUI
 
         private void button18_Click(object sender, EventArgs e)
         {
-
+            setCheckedClient();
+            setClientColor();
+            if (checkedClientList.Count == 0)
+            {
+                return;
+            }
+            imagePath = imageTextBox.Text;
+            musicPath = musicTextBox.Text;
+            if (imagePath == "" && musicPath=="")
+            {
+                this.updateOutput("请选择图片或者音乐");
+                return;
+            }
+            if (imagePath.IndexOf(" ") != -1 || musicPath.IndexOf(" ") != -1)
+            {
+                this.updateOutput("路径不能含有空格");
+                return;
+            }
+            Thread t = new Thread(new ThreadStart(this.build));
+            t.Start();
         }
 
 
@@ -1048,7 +1148,9 @@ namespace AdbGUI
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("cmd");
+           if(IsChina(@"aaa!@#$%^&*()1")){
+               this.updateOutput("中文");
+           }
         }
 
         //更新输出信息
@@ -1194,6 +1296,24 @@ namespace AdbGUI
         private void button15_Click(object sender, EventArgs e)
         {
             this.opRichTextBox.Text = "";
+        }
+
+        //判断是否含有中文
+        private bool IsChina(string CString)
+        {
+            bool BoolValue = false;
+            for (int i = 0; i < CString.Length; i++)
+            {
+                if (Convert.ToInt32(Convert.ToChar(CString.Substring(i, 1))) < Convert.ToInt32(Convert.ToChar(128)))
+                {
+                    BoolValue = false;
+                }
+                else
+                {
+                    return BoolValue = true;
+                }
+            }
+            return BoolValue;
         }
     }
 }
