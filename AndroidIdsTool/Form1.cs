@@ -18,6 +18,8 @@ namespace AndroidIdsTool
 {
     public partial class Form1 : Form
     {
+        //版本
+        private String version = "20130826.001";
         private String adbPath = "";
         private String devIp = "jason.liu";
         //超时
@@ -70,7 +72,7 @@ namespace AndroidIdsTool
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe"))
             {
                 byte[] Save = global::AndroidIdsTool.Properties.Resources.adb;
-                FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\adb.exe",FileMode.CreateNew);
+                FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\adb.exe", FileMode.CreateNew);
                 fsObj.Write(Save, 0, Save.Length);
                 fsObj.Close();
             }
@@ -81,7 +83,6 @@ namespace AndroidIdsTool
                 fsObj.Write(Save, 0, Save.Length);
                 fsObj.Close();
             }
-
 
             // 必要文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe") || !System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
@@ -180,23 +181,35 @@ namespace AndroidIdsTool
             appStartTextBox.Text = appStart;
             adbStartTextBox.Text = adbStart;
 
-            //参看根目录下是否有apk
-            apkPath = System.Environment.CurrentDirectory + @"\ids.apk";
-            if (File.Exists(apkPath))
+            //默认文件
+            String[] filenames = Directory.GetFiles(System.Environment.CurrentDirectory);
+            foreach (String file in filenames)
             {
-                this.apkTextBox.Text = apkPath;
+                String tmp = file.Replace(System.Environment.CurrentDirectory + "\\", "");
+                //应用
+                if (tmp.IndexOf("ids") != -1 && tmp.IndexOf(".apk") != -1)
+                {
+                    apkPath = file;
+                }
+                //背景图片
+                if (tmp == "bg.jpg")
+                {
+                    imagePath = file;
+                }
+                //背景音乐
+                if (tmp == "bg.mp3")
+                {
+                    musicPath = file;
+                }
+
             }
-            //定制
-            imagePath = System.Environment.CurrentDirectory + @"\bg.jpg";
-            if (File.Exists(imagePath))
-            {
-                this.imageTextBox.Text = imagePath;
-            }
-            musicPath = System.Environment.CurrentDirectory + @"\bg.mp3";
-            if (File.Exists(musicPath))
-            {
-                this.musicTextBox.Text = musicPath;
-            }
+            this.apkTextBox.Text = apkPath;
+            this.imageTextBox.Text = imagePath;
+            this.musicTextBox.Text = musicPath;
+
+            //输出信息
+            this.updateOutput("欢迎使用Android IDS 辅助工具\n");
+            this.updateOutput("版本:" + version + "\n");
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -247,9 +260,10 @@ namespace AndroidIdsTool
                 ListViewItem item = new ListViewItem("");
                 item.SubItems.Add(val);
                 item.SubItems.Add(key);
-                if(i%2 == 0){
+                if (i % 2 == 0)
+                {
                     item.BackColor = Color.AliceBlue;
-                }        
+                }
                 clientListView.Items.Add(item);
             }
         }
@@ -401,7 +415,7 @@ namespace AndroidIdsTool
             killAdb();
             String ip = checkedClientList[0].ToString();
             this.updateOutput("==============" + ip + "===============\n");
-            connectClient(ip);     
+            connectClient(ip);
         }
 
         //关闭连接
@@ -420,13 +434,14 @@ namespace AndroidIdsTool
         {
             String ip = checkedClientList[0].ToString();
             this.updateOutput("===========" + ip + "=============\n");
-            disConnectClient(ip); 
+            disConnectClient(ip);
         }
 
         //重启客户端
         private void rebootClient(String ip)
         {
             this.updateOutput("正在重启" + ip + "...\n");
+            this.updateOutput("如果失败，请重试。\n");
 
             String order = "";
             currentIp = ip;
@@ -440,7 +455,6 @@ namespace AndroidIdsTool
             order = adbPath + " -s " + ip + ":5555 reboot";
             process.StandardInput.WriteLine(order);
             process.Close();
-            this.updateOutput("重启完成。如果失败，请重试。\n");
         }
 
         //批量重启客户端
@@ -474,7 +488,9 @@ namespace AndroidIdsTool
             }
 
             currentIp = ip;
-            this.updateOutput("正在导出"+ip+"日志...\n");
+
+            this.updateOutput("正在导出" + ip + "日志...\n");
+            this.updateOutput("日志将会保存在" + logDir + "\n");
 
             if (briefProcess == null)
             {
@@ -490,7 +506,6 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("日志已保存在" + logDir + "\n");
         }
 
         //批量导出日志
@@ -527,6 +542,7 @@ namespace AndroidIdsTool
 
             currentIp = ip;
             this.updateOutput("正在导出" + ip + "Debug信息...\n");
+            this.updateOutput("debug信息将会保存在" + debugDir + "\n");
 
             if (briefProcess == null)
             {
@@ -542,7 +558,6 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("debug信息已保存在" + debugDir + "\n");
         }
 
         //批量导出debug信息
@@ -590,7 +605,6 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("安装完成\n");
         }
 
         //批量安装应用
@@ -637,7 +651,6 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("卸载完成\n");
         }
 
         //批量卸载应用
@@ -678,12 +691,11 @@ namespace AndroidIdsTool
             order = adbPath + " connect " + ip;
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
-            order = adbPath + " -s " + ip + ":5555 shell am start -n "+packageName+"/"+appStart;
+            order = adbPath + " -s " + ip + ":5555 shell am start -n " + packageName + "/" + appStart;
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("启动完成\n");
         }
 
         //批量启动应用
@@ -724,12 +736,11 @@ namespace AndroidIdsTool
             order = adbPath + " connect " + ip;
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
-            order = adbPath + " -s " + ip + ":5555 shell am start -n "+packageName+"/"+adbStart+" --es clientName '" + clientName + "'" + " --es serverIp '" + serverIp + "'";
+            order = adbPath + " -s " + ip + ":5555 shell am start -n " + packageName + "/" + adbStart + " --es clientName '" + clientName + "'" + " --es serverIp '" + serverIp + "'";
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("快速启动完成\n");
         }
 
         //批量快速启动应用
@@ -759,7 +770,7 @@ namespace AndroidIdsTool
                     }
                 }
                 this.updateOutput("===========" + ip + "=============\n");
-                quickStartApp(ip,clientName);
+                quickStartApp(ip, clientName);
             }
         }
 
@@ -779,7 +790,8 @@ namespace AndroidIdsTool
             order = adbPath + " connect " + ip;
             briefProcess.StandardInput.WriteLine(order);
             Thread.Sleep(1000);
-            if(imagePath != ""){
+            if (imagePath != "")
+            {
                 order = adbPath + " -s " + ip + ":5555 push \"" + imagePath + "\" /data/data/" + packageName + "/files/image/";
                 briefProcess.StandardInput.WriteLine(order);
                 Thread.Sleep(1000);
@@ -792,7 +804,6 @@ namespace AndroidIdsTool
             }
             order = adbPath + " disconnect " + ip;
             briefProcess.StandardInput.WriteLine(order);
-            this.updateOutput("定制完成\n");
         }
         //批量定制
         private void build()
@@ -829,7 +840,7 @@ namespace AndroidIdsTool
         //发送命令
         private void sendMessage(String ip, int port, String msg)
         {
-            this.updateOutput("发送命令--" + msg + "至"+ip+"\n");
+            this.updateOutput("发送命令--" + msg + "至" + ip + "\n");
             TcpClient client = new TcpClient(ip, port);
             NetworkStream stream = client.GetStream();
             StreamWriter writer = new StreamWriter(stream);
@@ -1129,7 +1140,7 @@ namespace AndroidIdsTool
             }
             imagePath = imageTextBox.Text;
             musicPath = musicTextBox.Text;
-            if (imagePath == "" && musicPath=="")
+            if (imagePath == "" && musicPath == "")
             {
                 this.updateOutput("请选择图片或者音乐");
                 return;
@@ -1160,13 +1171,13 @@ namespace AndroidIdsTool
         }
 
 
-
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-           if(isChinese(@"aaa!@#$%^&*()1")){
-               this.updateOutput("中文");
-           }
+            if (isChinese(@"aaa!@#$%^&*()1"))
+            {
+                this.updateOutput("中文");
+            }
         }
 
         //更新输出信息
@@ -1258,12 +1269,12 @@ namespace AndroidIdsTool
         //结束adb持续进程
         private void killSustainedProcess()
         {
-            if (sustainedProcess!=null)
+            if (sustainedProcess != null)
             {
-                    sustainedProcess.CancelOutputRead();
-                    sustainedProcess.CancelErrorRead();
-                    sustainedProcess.Close();
-                    sustainedProcess = null;
+                sustainedProcess.CancelOutputRead();
+                sustainedProcess.CancelErrorRead();
+                sustainedProcess.Close();
+                sustainedProcess = null;
 
             }
         }
