@@ -5,7 +5,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using System.IO;
@@ -15,7 +14,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
-namespace AdbGUI
+namespace AndroidIdsTool
 {
     public partial class Form1 : Form
     {
@@ -56,23 +55,40 @@ namespace AdbGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (System.Environment.CurrentDirectory.IndexOf(" ") != -1 || IsChina(System.Environment.CurrentDirectory))
+            if (System.Environment.CurrentDirectory.IndexOf(" ") != -1 || isChinese(System.Environment.CurrentDirectory))
             {
                 if (MessageBox.Show("程序路径含有空格或者中文，可能引起未知问题，忽略yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
+                    Application.Exit();
                     return;
                 }
             }
 
             //显示列表
             this.showList();
+            //释放文件
+            if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe"))
+            {
+                byte[] Save = global::AndroidIdsTool.Properties.Resources.adb;
+                FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\adb.exe",FileMode.CreateNew);
+                fsObj.Write(Save, 0, Save.Length);
+                fsObj.Close();
+            }
+            if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
+            {
+                byte[] Save = global::AndroidIdsTool.Properties.Resources.AdbWinApi;
+                FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\AdbWinApi.dll", FileMode.CreateNew);
+                fsObj.Write(Save, 0, Save.Length);
+                fsObj.Close();
+            }
+
 
             // 必要文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe") || !System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
             {
                 this.updateOutput("错误:adb.exe或AdbWinApi.dll不存在\n");
                 this.updateOutput("联系jason.liu@amttgroup.com\n");
-                this.operateTabControl.Enabled = false;
+                this.operateGroupBox.Enabled = false;
             }
             //adb路径
             adbPath = System.Environment.CurrentDirectory + @"\adb.exe";
@@ -165,7 +181,7 @@ namespace AdbGUI
             adbStartTextBox.Text = adbStart;
 
             //参看根目录下是否有apk
-            apkPath = System.Environment.CurrentDirectory + @"\Coon.apk";
+            apkPath = System.Environment.CurrentDirectory + @"\ids.apk";
             if (File.Exists(apkPath))
             {
                 this.apkTextBox.Text = apkPath;
@@ -262,7 +278,7 @@ namespace AdbGUI
             String ip = this.ipTextBox.Text;
             if (name == "" || ip == "")
             {
-                MessageBox.Show("输入有误！");
+                this.updateOutput("输入有误！\n");
                 return;
             }
             this.addClient(ip, name);
@@ -280,7 +296,7 @@ namespace AdbGUI
 
             if (p1 == "" || p2 == "" || p3 == "" || p4 == "" || p5 == "")
             {
-                MessageBox.Show("输入有误！");
+                this.updateOutput("输入有误！\n");
                 return;
             }
             int start = 0;
@@ -292,7 +308,7 @@ namespace AdbGUI
             }
             catch (Exception)
             {
-                MessageBox.Show("输入有误！");
+                this.updateOutput("输入有误！\n");
                 return;
             }
 
@@ -924,7 +940,7 @@ namespace AdbGUI
             apkPath = this.apkTextBox.Text;
             if (apkPath == "")
             {
-                MessageBox.Show("请选择应用\n");
+                this.updateOutput("请选择应用\n");
                 return;
             }
 
@@ -1148,7 +1164,7 @@ namespace AdbGUI
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-           if(IsChina(@"aaa!@#$%^&*()1")){
+           if(isChinese(@"aaa!@#$%^&*()1")){
                this.updateOutput("中文");
            }
         }
@@ -1299,7 +1315,7 @@ namespace AdbGUI
         }
 
         //判断是否含有中文
-        private bool IsChina(string CString)
+        private bool isChinese(string CString)
         {
             bool BoolValue = false;
             for (int i = 0; i < CString.Length; i++)

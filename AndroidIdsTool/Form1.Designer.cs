@@ -1,4 +1,4 @@
-﻿namespace AdbGUI
+﻿namespace AndroidIdsTool
 {
     partial class Form1
     {
@@ -109,7 +109,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.operateGroupBox = new System.Windows.Forms.GroupBox();
             this.button23 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
@@ -123,7 +123,7 @@
             this.deployPanel.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.operateGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // clientListView
@@ -880,18 +880,18 @@
             this.panel3.Size = new System.Drawing.Size(591, 218);
             this.panel3.TabIndex = 36;
             // 
-            // groupBox2
+            // operateGroupBox
             // 
-            this.groupBox2.Controls.Add(this.button23);
-            this.groupBox2.Controls.Add(this.button22);
-            this.groupBox2.Controls.Add(this.button15);
-            this.groupBox2.Controls.Add(this.operateTabControl);
-            this.groupBox2.Location = new System.Drawing.Point(421, 30);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(613, 297);
-            this.groupBox2.TabIndex = 40;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "操作";
+            this.operateGroupBox.Controls.Add(this.button23);
+            this.operateGroupBox.Controls.Add(this.button22);
+            this.operateGroupBox.Controls.Add(this.button15);
+            this.operateGroupBox.Controls.Add(this.operateTabControl);
+            this.operateGroupBox.Location = new System.Drawing.Point(421, 30);
+            this.operateGroupBox.Name = "operateGroupBox";
+            this.operateGroupBox.Size = new System.Drawing.Size(613, 297);
+            this.operateGroupBox.TabIndex = 40;
+            this.operateGroupBox.TabStop = false;
+            this.operateGroupBox.Text = "操作";
             // 
             // button23
             // 
@@ -928,7 +928,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1041, 729);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.operateGroupBox);
             this.Controls.Add(this.opGroupBox);
             this.Controls.Add(this.clientGroupBox);
             this.Controls.Add(this.menuStrip1);
@@ -954,7 +954,7 @@
             this.tabPage3.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
+            this.operateGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1031,7 +1031,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox operateGroupBox;
         private System.Windows.Forms.Panel devPanel;
         private System.Windows.Forms.Panel deployPanel;
         private System.Windows.Forms.Panel panel3;

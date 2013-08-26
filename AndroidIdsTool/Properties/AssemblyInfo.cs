@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("AdbGUI")]
+[assembly: AssemblyTitle("AndroidIdsTool")]
 [assembly: AssemblyDescription("Android IDS辅助工具\r\nCreated By Jason Liu\r\njason.liu@amttgroup.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("个人")]
-[assembly: AssemblyProduct("AdbGUI")]
+[assembly: AssemblyProduct("AndroidIdsTool")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("11692203")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // 可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值，
 // 方法是按如下所示使用“*”:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿namespace AdbGUI
+﻿namespace AndroidIdsTool
 {
     partial class AboutBox1
     {
