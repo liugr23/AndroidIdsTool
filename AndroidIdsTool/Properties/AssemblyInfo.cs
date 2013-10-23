@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("个人")]
 [assembly: AssemblyProduct("AndroidIdsTool")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCopyright("Copyright ©  2013 Jason Liu")]
 [assembly: AssemblyTrademark("11692203")]
 [assembly: AssemblyCulture("")]
 

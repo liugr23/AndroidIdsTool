@@ -100,51 +100,55 @@ namespace AndroidIdsTool
 
             //命令列表
             ArrayList list = new ArrayList();
+            list.Add(new DictionaryEntry("reboot", "重启"));
+            list.Add(new DictionaryEntry("debugTask", "调试任务"));
+            list.Add(new DictionaryEntry("debugUi", "调试UI"));
+            list.Add(new DictionaryEntry("resetApp", "重置客户端配置文件*"));
+            list.Add(new DictionaryEntry("resetData", "重置客户端任务数据"));
+            list.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
+            list.Add(new DictionaryEntry("keepTop", "保持最前端"));
+            list.Add(new DictionaryEntry("cancelTop", "取消保持最前端"));
+            list.Add(new DictionaryEntry("startStartup", "开启开机启动"));
+            list.Add(new DictionaryEntry("stopStartup", "关闭开机启动"));
             list.Add(new DictionaryEntry("debug", "Debug"));
             list.Add(new DictionaryEntry("screenshot", "截图"));
             list.Add(new DictionaryEntry("restartApp", "重启应用"));
-            list.Add(new DictionaryEntry("reboot", "重启"));
             list.Add(new DictionaryEntry("stopService", "关闭服务"));
-            list.Add(new DictionaryEntry("startProtect", "开启任务保护"));
-            list.Add(new DictionaryEntry("stopProtect", "关闭任务保护"));
-            list.Add(new DictionaryEntry("startStartup", "开启开机启动"));
-            list.Add(new DictionaryEntry("stopStartup", "关闭开机启动"));
             list.Add(new DictionaryEntry("restartTask", "重启任务"));
-            list.Add(new DictionaryEntry("resetData", "重置客户端任务数据"));
-            list.Add(new DictionaryEntry("resetApp", "重置客户端配置文件*"));
+            
             this.cmdComboBox.DataSource = list;
             this.cmdComboBox.DisplayMember = "Value";//显示的Text值
             this.cmdComboBox.ValueMember = "Key";// 实际value值
 
             //切换效果列表
             ArrayList effectList = new ArrayList();
-            effectList.Add(new DictionaryEntry("e0", "无"));
-            effectList.Add(new DictionaryEntry("e1001", "立方体1"));
-            effectList.Add(new DictionaryEntry("e1002", "擦除-上-下2*"));
-            effectList.Add(new DictionaryEntry("e1003", "旋转4*"));
-            effectList.Add(new DictionaryEntry("e1004", "擦除-左-右7*"));
-            effectList.Add(new DictionaryEntry("e1005", "切出11*"));
-            effectList.Add(new DictionaryEntry("e1006", "翻页15"));
-            effectList.Add(new DictionaryEntry("e1007", "淡出17*"));
-            effectList.Add(new DictionaryEntry("e1008", "淡入21*"));
+            effectList.Add(new DictionaryEntry("e-1", "无"));
+            effectList.Add(new DictionaryEntry("e1", "立方体1"));
+            effectList.Add(new DictionaryEntry("e2", "擦除-上-下2*"));
+            effectList.Add(new DictionaryEntry("e4", "旋转4*"));
+            effectList.Add(new DictionaryEntry("e7", "擦除-左-右7*"));
+            effectList.Add(new DictionaryEntry("e11", "切出11*"));
+            effectList.Add(new DictionaryEntry("e15", "翻页15"));
+            effectList.Add(new DictionaryEntry("e17", "淡出17*"));
+            effectList.Add(new DictionaryEntry("e21", "淡入21*"));
             effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
-            effectList.Add(new DictionaryEntry("e2001", "星形0"));
-            effectList.Add(new DictionaryEntry("e2002", "溶解10"));
-            effectList.Add(new DictionaryEntry("e2003", "菱形5"));
-            effectList.Add(new DictionaryEntry("e2004", "左右百叶窗6"));
-            effectList.Add(new DictionaryEntry("e2005", "翻页3"));
-            effectList.Add(new DictionaryEntry("e2006", "分割13"));
-            effectList.Add(new DictionaryEntry("e2007", "上下百叶窗20"));
-            effectList.Add(new DictionaryEntry("e2008", "溶解16"));
-            effectList.Add(new DictionaryEntry("e2009", "擦除--左上--右下14"));
-            effectList.Add(new DictionaryEntry("e2010", "收缩18"));
+            effectList.Add(new DictionaryEntry("e0", "星形0"));
+            effectList.Add(new DictionaryEntry("e10", "溶解10"));
+            effectList.Add(new DictionaryEntry("e5", "菱形5"));
+            effectList.Add(new DictionaryEntry("e6", "左右百叶窗6"));
+            effectList.Add(new DictionaryEntry("e3", "翻页3"));
+            effectList.Add(new DictionaryEntry("e13", "分割13"));
+            effectList.Add(new DictionaryEntry("e20", "上下百叶窗20"));
+            effectList.Add(new DictionaryEntry("e16", "溶解16"));
+            effectList.Add(new DictionaryEntry("e14", "擦除--左上--右下14"));
+            effectList.Add(new DictionaryEntry("e18", "收缩18"));
             effectList.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
-            effectList.Add(new DictionaryEntry("e2011", "超级淡入21"));
-            effectList.Add(new DictionaryEntry("e2012", "超级淡出17"));
-            effectList.Add(new DictionaryEntry("e2013", "超级切出11"));
-            effectList.Add(new DictionaryEntry("e2014", "超级旋转4"));
-            effectList.Add(new DictionaryEntry("e2015", "超级擦除-左-右7"));
-            effectList.Add(new DictionaryEntry("e2016", "超级擦除-上-下2"));
+            effectList.Add(new DictionaryEntry("e21", "超级淡入21"));
+            effectList.Add(new DictionaryEntry("e17", "超级淡出17"));
+            effectList.Add(new DictionaryEntry("e11", "超级切出11"));
+            effectList.Add(new DictionaryEntry("e4", "超级旋转4"));
+            effectList.Add(new DictionaryEntry("e7", "超级擦除-左-右7"));
+            effectList.Add(new DictionaryEntry("e2", "超级擦除-上-下2"));
             this.effectComboBox.DataSource = effectList;
             this.effectComboBox.DisplayMember = "Value";//显示的Text值
             this.effectComboBox.ValueMember = "Key";// 实际value值
@@ -1341,6 +1345,11 @@ namespace AndroidIdsTool
                 }
             }
             return BoolValue;
+        }
+
+        private void button26_Click(object sender, EventArgs e)
+        {
+            killAdb();
         }
     }
 }

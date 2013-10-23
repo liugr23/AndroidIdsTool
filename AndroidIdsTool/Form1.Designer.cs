@@ -113,6 +113,7 @@
             this.button23 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
+            this.button26 = new System.Windows.Forms.Button();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -882,6 +883,7 @@
             // 
             // operateGroupBox
             // 
+            this.operateGroupBox.Controls.Add(this.button26);
             this.operateGroupBox.Controls.Add(this.button23);
             this.operateGroupBox.Controls.Add(this.button22);
             this.operateGroupBox.Controls.Add(this.button15);
@@ -922,6 +924,16 @@
             this.button15.Text = "清空输出";
             this.button15.UseVisualStyleBackColor = true;
             this.button15.Click += new System.EventHandler(this.button15_Click);
+            // 
+            // button26
+            // 
+            this.button26.Location = new System.Drawing.Point(243, 268);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(75, 23);
+            this.button26.TabIndex = 43;
+            this.button26.Text = "结束adb";
+            this.button26.UseVisualStyleBackColor = true;
+            this.button26.Click += new System.EventHandler(this.button26_Click);
             // 
             // Form1
             // 
@@ -1045,6 +1057,7 @@
         private System.Windows.Forms.TextBox appStartTextBox;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button button26;
     }
 }
 
