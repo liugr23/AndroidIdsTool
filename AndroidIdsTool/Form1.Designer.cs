@@ -109,11 +109,30 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button30 = new System.Windows.Forms.Button();
+            this.cPortTextBox = new System.Windows.Forms.TextBox();
+            this.sPortTextBox = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.button29 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button27 = new System.Windows.Forms.Button();
+            this.button28 = new System.Windows.Forms.Button();
+            this.cUdpCmdTextBox = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.cUdpPortTextBox = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.operateGroupBox = new System.Windows.Forms.GroupBox();
+            this.button26 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
-            this.button26 = new System.Windows.Forms.Button();
+            this.label22 = new System.Windows.Forms.Label();
+            this.cIpTextBox = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.SafeCheckBox = new System.Windows.Forms.CheckBox();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -124,6 +143,9 @@
             this.deployPanel.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.operateGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -729,6 +751,7 @@
             this.operateTabControl.Controls.Add(this.tabPage1);
             this.operateTabControl.Controls.Add(this.tabPage2);
             this.operateTabControl.Controls.Add(this.tabPage3);
+            this.operateTabControl.Controls.Add(this.tabPage4);
             this.operateTabControl.Location = new System.Drawing.Point(8, 22);
             this.operateTabControl.Name = "operateTabControl";
             this.operateTabControl.SelectedIndex = 0;
@@ -881,6 +904,159 @@
             this.panel3.Size = new System.Drawing.Size(591, 218);
             this.panel3.TabIndex = 36;
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.SafeCheckBox);
+            this.tabPage4.Controls.Add(this.label23);
+            this.tabPage4.Controls.Add(this.cIpTextBox);
+            this.tabPage4.Controls.Add(this.label22);
+            this.tabPage4.Controls.Add(this.groupBox2);
+            this.tabPage4.Controls.Add(this.button29);
+            this.tabPage4.Controls.Add(this.groupBox1);
+            this.tabPage4.Controls.Add(this.button28);
+            this.tabPage4.Controls.Add(this.cUdpCmdTextBox);
+            this.tabPage4.Controls.Add(this.label19);
+            this.tabPage4.Controls.Add(this.cUdpPortTextBox);
+            this.tabPage4.Controls.Add(this.label18);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(591, 218);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "维护";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.button30);
+            this.groupBox2.Controls.Add(this.cPortTextBox);
+            this.groupBox2.Controls.Add(this.sPortTextBox);
+            this.groupBox2.Controls.Add(this.label21);
+            this.groupBox2.Controls.Add(this.label20);
+            this.groupBox2.Location = new System.Drawing.Point(9, 94);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(576, 56);
+            this.groupBox2.TabIndex = 8;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "获取服务器IP";
+            // 
+            // button30
+            // 
+            this.button30.Location = new System.Drawing.Point(401, 16);
+            this.button30.Name = "button30";
+            this.button30.Size = new System.Drawing.Size(75, 23);
+            this.button30.TabIndex = 6;
+            this.button30.Text = "获取";
+            this.button30.UseVisualStyleBackColor = true;
+            this.button30.Click += new System.EventHandler(this.button30_Click);
+            // 
+            // cPortTextBox
+            // 
+            this.cPortTextBox.Location = new System.Drawing.Point(257, 23);
+            this.cPortTextBox.Name = "cPortTextBox";
+            this.cPortTextBox.Size = new System.Drawing.Size(100, 20);
+            this.cPortTextBox.TabIndex = 5;
+            this.cPortTextBox.Text = "9997";
+            // 
+            // sPortTextBox
+            // 
+            this.sPortTextBox.Location = new System.Drawing.Point(79, 23);
+            this.sPortTextBox.Name = "sPortTextBox";
+            this.sPortTextBox.Size = new System.Drawing.Size(100, 20);
+            this.sPortTextBox.TabIndex = 4;
+            this.sPortTextBox.Text = "9998";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(196, 26);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(55, 13);
+            this.label21.TabIndex = 3;
+            this.label21.Text = "本机端口";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 26);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(67, 13);
+            this.label20.TabIndex = 2;
+            this.label20.Text = "服务器端口";
+            // 
+            // button29
+            // 
+            this.button29.Location = new System.Drawing.Point(491, 12);
+            this.button29.Name = "button29";
+            this.button29.Size = new System.Drawing.Size(75, 23);
+            this.button29.TabIndex = 7;
+            this.button29.Text = "监听";
+            this.button29.UseVisualStyleBackColor = true;
+            this.button29.Click += new System.EventHandler(this.button29_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button27);
+            this.groupBox1.Location = new System.Drawing.Point(9, 156);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(576, 47);
+            this.groupBox1.TabIndex = 6;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "快捷";
+            // 
+            // button27
+            // 
+            this.button27.Location = new System.Drawing.Point(6, 19);
+            this.button27.Name = "button27";
+            this.button27.Size = new System.Drawing.Size(115, 23);
+            this.button27.TabIndex = 0;
+            this.button27.Text = "重启所有客户端";
+            this.button27.UseVisualStyleBackColor = true;
+            this.button27.Click += new System.EventHandler(this.button27_Click);
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(410, 12);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(75, 23);
+            this.button28.TabIndex = 5;
+            this.button28.Text = "发送";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.button28_Click);
+            // 
+            // cUdpCmdTextBox
+            // 
+            this.cUdpCmdTextBox.Location = new System.Drawing.Point(266, 14);
+            this.cUdpCmdTextBox.Name = "cUdpCmdTextBox";
+            this.cUdpCmdTextBox.Size = new System.Drawing.Size(100, 20);
+            this.cUdpCmdTextBox.TabIndex = 4;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(205, 17);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(31, 13);
+            this.label19.TabIndex = 3;
+            this.label19.Text = "命令";
+            // 
+            // cUdpPortTextBox
+            // 
+            this.cUdpPortTextBox.Location = new System.Drawing.Point(88, 14);
+            this.cUdpPortTextBox.Name = "cUdpPortTextBox";
+            this.cUdpPortTextBox.Size = new System.Drawing.Size(100, 20);
+            this.cUdpPortTextBox.TabIndex = 2;
+            this.cUdpPortTextBox.Text = "9996";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(15, 17);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(55, 13);
+            this.label18.TabIndex = 1;
+            this.label18.Text = "对方端口";
+            // 
             // operateGroupBox
             // 
             this.operateGroupBox.Controls.Add(this.button26);
@@ -894,6 +1070,16 @@
             this.operateGroupBox.TabIndex = 40;
             this.operateGroupBox.TabStop = false;
             this.operateGroupBox.Text = "操作";
+            // 
+            // button26
+            // 
+            this.button26.Location = new System.Drawing.Point(243, 268);
+            this.button26.Name = "button26";
+            this.button26.Size = new System.Drawing.Size(75, 23);
+            this.button26.TabIndex = 43;
+            this.button26.Text = "结束adb";
+            this.button26.UseVisualStyleBackColor = true;
+            this.button26.Click += new System.EventHandler(this.button26_Click);
             // 
             // button23
             // 
@@ -925,15 +1111,39 @@
             this.button15.UseVisualStyleBackColor = true;
             this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
-            // button26
+            // label22
             // 
-            this.button26.Location = new System.Drawing.Point(243, 268);
-            this.button26.Name = "button26";
-            this.button26.Size = new System.Drawing.Size(75, 23);
-            this.button26.TabIndex = 43;
-            this.button26.Text = "结束adb";
-            this.button26.UseVisualStyleBackColor = true;
-            this.button26.Click += new System.EventHandler(this.button26_Click);
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(15, 53);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(41, 13);
+            this.label22.TabIndex = 9;
+            this.label22.Text = "本机IP";
+            // 
+            // cIpTextBox
+            // 
+            this.cIpTextBox.Location = new System.Drawing.Point(88, 53);
+            this.cIpTextBox.Name = "cIpTextBox";
+            this.cIpTextBox.Size = new System.Drawing.Size(100, 20);
+            this.cIpTextBox.TabIndex = 10;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(208, 59);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(31, 13);
+            this.label23.TabIndex = 11;
+            this.label23.Text = "加密";
+            // 
+            // SafeCheckBox
+            // 
+            this.SafeCheckBox.AutoSize = true;
+            this.SafeCheckBox.Location = new System.Drawing.Point(266, 59);
+            this.SafeCheckBox.Name = "SafeCheckBox";
+            this.SafeCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.SafeCheckBox.TabIndex = 12;
+            this.SafeCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -966,6 +1176,11 @@
             this.tabPage3.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.operateGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1058,6 +1273,25 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button button26;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button28;
+        private System.Windows.Forms.TextBox cUdpCmdTextBox;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox cUdpPortTextBox;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button button29;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button button30;
+        private System.Windows.Forms.TextBox cPortTextBox;
+        private System.Windows.Forms.TextBox sPortTextBox;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox cIpTextBox;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.CheckBox SafeCheckBox;
+        private System.Windows.Forms.Label label23;
     }
 }
 

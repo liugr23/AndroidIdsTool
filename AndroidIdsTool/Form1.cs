@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Net;
 
 namespace AndroidIdsTool
 {
@@ -185,6 +186,9 @@ namespace AndroidIdsTool
             appStartTextBox.Text = appStart;
             adbStartTextBox.Text = adbStart;
 
+            this.cIpTextBox.Text = Common.getIPAddress();
+            this.SafeCheckBox.Checked = Global.safe;
+
             //默认文件
             String[] filenames = Directory.GetFiles(System.Environment.CurrentDirectory);
             foreach (String file in filenames)
@@ -214,6 +218,9 @@ namespace AndroidIdsTool
             //输出信息
             this.updateOutput("欢迎使用Android IDS 辅助工具\n");
             this.updateOutput("版本:" + version + "\n");
+
+            //禁用部分控件
+            this.button21.Enabled = false;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -1350,6 +1357,173 @@ namespace AndroidIdsTool
         private void button26_Click(object sender, EventArgs e)
         {
             killAdb();
+        }
+
+        /**
+         * 发送UDP
+        */
+        private void sendUdp(int port,string msg)
+        {
+            string cmd = "";
+            bool safe = this.SafeCheckBox.Checked;
+            if (safe)
+            {
+                String ip = this.cIpTextBox.Text;
+                String key = Common.formatStr(ip, 16);
+                String iv = Common.formatStr(Global.iv, 16);
+                cmd = Common.encrypt(msg, key, iv).Trim();
+
+                this.updateOutput("当前处于安全模式\n");
+                this.updateOutput("本机IP: " + ip + "\n");
+                this.updateOutput("加密前的命令: " + msg + "\n");
+                this.updateOutput("加密key: " + key + "\n");
+                this.updateOutput("加密iv: " + iv + "\n");
+                this.updateOutput("加密后的命令: " + cmd + "\n");
+            }
+            else
+            {
+                this.updateOutput("当前处于非安全模式\n");
+                this.updateOutput("不加密命令\n");
+                cmd = msg.Trim();
+            }
+
+            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPEndPoint iep = new IPEndPoint(IPAddress.Broadcast, port);
+            sock.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+            byte[] buffer = Encoding.UTF8.GetBytes(cmd);
+            sock.SendTo(buffer, iep);
+            sock.Close();
+            this.updateOutput("向端口" + port + "发送"+msg+"\n");
+        }
+
+        //重启所有客户端
+        private void button27_Click(object sender, EventArgs e)
+        {
+            string portStr = this.cUdpPortTextBox.Text;
+            if (portStr == "")
+            {
+                portStr = "9996";
+            }
+            int port = int.Parse(portStr);
+            sendUdp(port,"reboot");
+        }
+
+        //发送UDP命令
+        private void button28_Click(object sender, EventArgs e)
+        {
+            string cmd = this.cUdpCmdTextBox.Text;
+            if (cmd == "")
+            {
+                return;
+            }
+            string portStr = this.cUdpPortTextBox.Text;
+            if (portStr == "")
+            {
+                portStr = "9996";
+            }
+            int port = int.Parse(portStr);
+            sendUdp(port,cmd);
+        }
+
+        private void listenCmd()
+        {
+            string portStr = this.cUdpPortTextBox.Text;
+            if (portStr == "")
+            {
+                portStr = "9996";
+            }
+            int port = int.Parse(portStr);
+
+            this.updateOutput("正在端口" + port + "监听\n");
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);//初始化一个Scoket协议
+            IPEndPoint iep = new IPEndPoint(IPAddress.Any, port);//初始化一个侦听局域网内部所有IP和指定端口
+            EndPoint ep = (EndPoint)iep;
+            socket.Bind(iep);//绑定这个实例
+            byte[] buffer = new byte[1024];//设置缓冲数据流
+            socket.ReceiveFrom(buffer, ref ep);//接收数据,并确把数据设置到缓冲流里面
+            string msg = Encoding.UTF8.GetString(buffer).TrimEnd('\u0000'); 
+            socket.Close();
+            this.updateOutput("监听到" + msg + "\n");
+        }
+
+        private void button29_Click(object sender, EventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(this.listenCmd));
+            t.Start();
+        }
+
+        //获取服务器IP
+        private void waitServerIp()
+        {
+            string portStr = this.cPortTextBox.Text;
+            if (portStr == "")
+            {
+                portStr = "9997";
+            }
+            int port = int.Parse(portStr);
+            this.updateOutput("正在端口" + port + "监听服务器信息\n");
+
+            string remoteIp = "";
+            string clientIp = "";
+
+            TcpListener myListener = new TcpListener(IPAddress.Any, port);//本地监听端口
+            //Socket listenerSocket = myListener.Server;
+            //LingerOption lingerOption = new LingerOption(true, 10);
+            //listenerSocket.SetSocketOption(SocketOptionLevel.Socket,
+             //                 SocketOptionName.Linger,
+             //                 lingerOption);   
+            myListener.Start();
+            try
+            {
+                TcpClient client = myListener.AcceptTcpClient();
+                client.ReceiveTimeout = 5000;
+                remoteIp = client.Client.RemoteEndPoint.ToString().Split(':')[0];//获取到服务器IP
+
+                NetworkStream streamToClient = client.GetStream();
+                byte[] buffer = new byte[1024];
+                streamToClient.Read(buffer, 0, buffer.Length);
+                clientIp = Encoding.UTF8.GetString(buffer);
+
+                client.Close();  
+            }catch(Exception e){
+                this.updateOutput(e.ToString());
+            }
+            myListener.Stop();
+
+            if (remoteIp != "")
+            {
+                this.updateOutput("本机IP" + clientIp + "\n");
+                this.updateOutput("服务器IP" + remoteIp + "\n");
+            }
+            else
+            {
+                this.updateOutput("获取服务器IP失败\n");
+            }
+            
+        }
+
+        //获取服务器IP
+        private void udpServer()
+        {
+            string portStr = this.sPortTextBox.Text;
+            if (portStr == "")
+            {
+                portStr = "9998";
+            }
+            int port = int.Parse(portStr);
+            for (int i = 0; i < 6;i++ )
+            {
+                Thread.Sleep(1000);
+                sendUdp(port, "ANDROID");
+            }
+        }
+
+        private void button30_Click(object sender, EventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(this.waitServerIp));
+            t.Start();
+            Thread t2 = new Thread(new ThreadStart(this.udpServer));
+            t2.Start();
         }
     }
 }
