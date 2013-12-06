@@ -96,6 +96,7 @@
             this.报告BugToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.donateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.关于ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.注销ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.operateTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.devPanel = new System.Windows.Forms.Panel();
@@ -110,6 +111,10 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.SafeCheckBox = new System.Windows.Forms.CheckBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.cIpTextBox = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button30 = new System.Windows.Forms.Button();
             this.cPortTextBox = new System.Windows.Forms.TextBox();
@@ -129,10 +134,6 @@
             this.button23 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
-            this.label22 = new System.Windows.Forms.Label();
-            this.cIpTextBox = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.SafeCheckBox = new System.Windows.Forms.CheckBox();
             this.opGroupBox.SuspendLayout();
             this.clientGroupBox.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -708,7 +709,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.帮助ToolStripMenuItem});
+            this.帮助ToolStripMenuItem,
+            this.注销ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1041, 24);
@@ -745,6 +747,15 @@
             this.关于ToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.关于ToolStripMenuItem.Text = "关于";
             this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
+            // 
+            // 注销ToolStripMenuItem
+            // 
+            this.注销ToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.注销ToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
+            this.注销ToolStripMenuItem.Name = "注销ToolStripMenuItem";
+            this.注销ToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.注销ToolStripMenuItem.Text = "注销";
+            this.注销ToolStripMenuItem.Click += new System.EventHandler(this.注销ToolStripMenuItem_Click);
             // 
             // operateTabControl
             // 
@@ -926,6 +937,40 @@
             this.tabPage4.Text = "维护";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // SafeCheckBox
+            // 
+            this.SafeCheckBox.AutoSize = true;
+            this.SafeCheckBox.Location = new System.Drawing.Point(393, 47);
+            this.SafeCheckBox.Name = "SafeCheckBox";
+            this.SafeCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.SafeCheckBox.TabIndex = 12;
+            this.SafeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(356, 47);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(31, 13);
+            this.label23.TabIndex = 11;
+            this.label23.Text = "加密";
+            // 
+            // cIpTextBox
+            // 
+            this.cIpTextBox.Location = new System.Drawing.Point(88, 13);
+            this.cIpTextBox.Name = "cIpTextBox";
+            this.cIpTextBox.Size = new System.Drawing.Size(100, 20);
+            this.cIpTextBox.TabIndex = 10;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(15, 16);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(41, 13);
+            this.label22.TabIndex = 9;
+            this.label22.Text = "本机IP";
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.button30);
@@ -986,7 +1031,7 @@
             // 
             // button29
             // 
-            this.button29.Location = new System.Drawing.Point(491, 12);
+            this.button29.Location = new System.Drawing.Point(513, 42);
             this.button29.Name = "button29";
             this.button29.Size = new System.Drawing.Size(75, 23);
             this.button29.TabIndex = 7;
@@ -1016,7 +1061,7 @@
             // 
             // button28
             // 
-            this.button28.Location = new System.Drawing.Point(410, 12);
+            this.button28.Location = new System.Drawing.Point(432, 42);
             this.button28.Name = "button28";
             this.button28.Size = new System.Drawing.Size(75, 23);
             this.button28.TabIndex = 5;
@@ -1026,7 +1071,7 @@
             // 
             // cUdpCmdTextBox
             // 
-            this.cUdpCmdTextBox.Location = new System.Drawing.Point(266, 14);
+            this.cUdpCmdTextBox.Location = new System.Drawing.Point(242, 44);
             this.cUdpCmdTextBox.Name = "cUdpCmdTextBox";
             this.cUdpCmdTextBox.Size = new System.Drawing.Size(100, 20);
             this.cUdpCmdTextBox.TabIndex = 4;
@@ -1034,7 +1079,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(205, 17);
+            this.label19.Location = new System.Drawing.Point(205, 47);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(31, 13);
             this.label19.TabIndex = 3;
@@ -1042,7 +1087,7 @@
             // 
             // cUdpPortTextBox
             // 
-            this.cUdpPortTextBox.Location = new System.Drawing.Point(88, 14);
+            this.cUdpPortTextBox.Location = new System.Drawing.Point(88, 44);
             this.cUdpPortTextBox.Name = "cUdpPortTextBox";
             this.cUdpPortTextBox.Size = new System.Drawing.Size(100, 20);
             this.cUdpPortTextBox.TabIndex = 2;
@@ -1051,7 +1096,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(15, 17);
+            this.label18.Location = new System.Drawing.Point(15, 47);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(55, 13);
             this.label18.TabIndex = 1;
@@ -1111,40 +1156,6 @@
             this.button15.UseVisualStyleBackColor = true;
             this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(15, 53);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(41, 13);
-            this.label22.TabIndex = 9;
-            this.label22.Text = "本机IP";
-            // 
-            // cIpTextBox
-            // 
-            this.cIpTextBox.Location = new System.Drawing.Point(88, 53);
-            this.cIpTextBox.Name = "cIpTextBox";
-            this.cIpTextBox.Size = new System.Drawing.Size(100, 20);
-            this.cIpTextBox.TabIndex = 10;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(208, 59);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(31, 13);
-            this.label23.TabIndex = 11;
-            this.label23.Text = "加密";
-            // 
-            // SafeCheckBox
-            // 
-            this.SafeCheckBox.AutoSize = true;
-            this.SafeCheckBox.Location = new System.Drawing.Point(266, 59);
-            this.SafeCheckBox.Name = "SafeCheckBox";
-            this.SafeCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.SafeCheckBox.TabIndex = 12;
-            this.SafeCheckBox.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1158,7 +1169,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Android IDS辅助工具";
+            this.Text = "IDS Android辅助工具";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.opGroupBox.ResumeLayout(false);
@@ -1292,6 +1303,7 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.CheckBox SafeCheckBox;
         private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ToolStripMenuItem 注销ToolStripMenuItem;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -63,20 +64,75 @@ namespace AndroidIdsTool
         //解密
         public static string decrypt(string toDecrypt, string key, string iv)
         {
-            byte[] keyArray = UTF8Encoding.UTF8.GetBytes(key);
-            byte[] ivArray = UTF8Encoding.UTF8.GetBytes(iv);
-            byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+            try{
+                byte[] keyArray = UTF8Encoding.UTF8.GetBytes(key);
+                byte[] ivArray = UTF8Encoding.UTF8.GetBytes(iv);
+                byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
 
-            RijndaelManaged rDel = new RijndaelManaged();
-            rDel.Key = keyArray;
-            rDel.IV = ivArray;
-            rDel.Mode = CipherMode.CBC;
-            rDel.Padding = PaddingMode.Zeros;
+                RijndaelManaged rDel = new RijndaelManaged();
+                rDel.Key = keyArray;
+                rDel.IV = ivArray;
+                rDel.Mode = CipherMode.CBC;
+                rDel.Padding = PaddingMode.Zeros;
 
-            ICryptoTransform cTransform = rDel.CreateDecryptor();
-            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+                ICryptoTransform cTransform = rDel.CreateDecryptor();
+                byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
 
-            return UTF8Encoding.UTF8.GetString(resultArray);
+                return UTF8Encoding.UTF8.GetString(resultArray);
+            } catch(Exception e){
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// 获得CPU的序列号
+        /// </summary>
+        /// <returns></returns>
+        public static string getCpu()
+        {
+            string strCpu = null;
+            ManagementClass myCpu = new ManagementClass("win32_Processor");
+            ManagementObjectCollection myCpuConnection = myCpu.GetInstances();
+            foreach (ManagementObject myObject in myCpuConnection)
+            {
+                strCpu = myObject.Properties["Processorid"].Value.ToString();
+                break;
+            }
+            return strCpu;
+        }
+
+        ///<summary>
+        ///   获取硬盘ID
+        ///</summary>
+        ///<returns> string </returns>
+        public static string GetHDid()
+        {
+            string HDid = " ";
+            using (ManagementClass cimobject1 = new ManagementClass("Win32_DiskDrive"))
+            {
+                ManagementObjectCollection moc1 = cimobject1.GetInstances();
+                foreach (ManagementObject mo in moc1)
+                {
+                    HDid = (string)mo.Properties["Model"].Value;
+                    mo.Dispose();
+                }
+            }
+            return HDid.ToString();
+        }
+
+        public static string MD5Encoding(string str)
+        {
+            // 创建MD5类的默认实例：MD5CryptoServiceProvider
+            MD5 md5 = MD5.Create();
+            byte[] bs = Encoding.UTF8.GetBytes(str);
+            byte[] hs = md5.ComputeHash(bs);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hs)
+            {
+                // 以十六进制格式格式化
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }

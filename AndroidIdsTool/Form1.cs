@@ -19,8 +19,6 @@ namespace AndroidIdsTool
 {
     public partial class Form1 : Form
     {
-        //版本
-        private String version = "20130826.001";
         private String adbPath = "";
         private String devIp = "jason.liu";
         //超时
@@ -40,7 +38,7 @@ namespace AndroidIdsTool
         //包名
         private String packageName = "com.amtt.ids";
         //服务器IP
-        private String serverIp = "192.168.15.114";
+        private String serverIp = Global.serverIp;
         //启动界面
         private String appStart = "com.amtt.ids.AppStart";
         //快速启动界面
@@ -60,26 +58,26 @@ namespace AndroidIdsTool
         {
             if (System.Environment.CurrentDirectory.IndexOf(" ") != -1 || isChinese(System.Environment.CurrentDirectory))
             {
-                if (MessageBox.Show("程序路径含有空格或者中文，可能引起未知问题，忽略yes返回no", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    Application.Exit();
-                    return;
-                }
+                MessageBox.Show("程序路径不能含有空格或者中文");
+                Application.Exit();
+                return;
             }
+
+            this.Text = this.Text + "@" + Common.getIPAddress();
 
             //显示列表
             this.showList();
             //释放文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe"))
             {
-                byte[] Save = global::AndroidIdsTool.Properties.Resources.adb;
+                byte[] Save = global::IdsAndroidTool.Properties.Resources.adb;
                 FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\adb.exe", FileMode.CreateNew);
                 fsObj.Write(Save, 0, Save.Length);
                 fsObj.Close();
             }
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
             {
-                byte[] Save = global::AndroidIdsTool.Properties.Resources.AdbWinApi;
+                byte[] Save = global::IdsAndroidTool.Properties.Resources.AdbWinApi;
                 FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\AdbWinApi.dll", FileMode.CreateNew);
                 fsObj.Write(Save, 0, Save.Length);
                 fsObj.Close();
@@ -154,37 +152,11 @@ namespace AndroidIdsTool
             this.effectComboBox.DisplayMember = "Value";//显示的Text值
             this.effectComboBox.ValueMember = "Key";// 实际value值
 
-            //高级模式
-            if (System.IO.File.Exists(@"jason.txt"))
-            {
-                String txt = "";
-                StreamReader sr = new StreamReader(@"jason.txt");
-                while (!sr.EndOfStream)
-                {
-                    string str = sr.ReadLine();
-                    txt += str;
-                }
-                sr.Close();
-                if (txt != "")
-                {
-                    this.devIp = txt;
-                    foreach (ListViewItem item in clientListView.Items)
-                    {
-                        String ip = item.SubItems[2].Text.ToString();
-                        if (ip == txt)
-                        {
-                            item.Checked = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
             //默认值
-            packageNameTextBox.Text = packageName;
-            serverIpTextBox.Text = serverIp;
-            appStartTextBox.Text = appStart;
-            adbStartTextBox.Text = adbStart;
+            this.packageNameTextBox.Text = packageName;
+            this.serverIpTextBox.Text = serverIp;
+            this.appStartTextBox.Text = appStart;
+            this.adbStartTextBox.Text = adbStart;
 
             this.cIpTextBox.Text = Common.getIPAddress();
             this.SafeCheckBox.Checked = Global.safe;
@@ -215,19 +187,29 @@ namespace AndroidIdsTool
             this.imageTextBox.Text = imagePath;
             this.musicTextBox.Text = musicPath;
 
-            //输出信息
-            this.updateOutput("欢迎使用Android IDS 辅助工具\n");
-            this.updateOutput("版本:" + version + "\n");
-
             //禁用部分控件
-            this.button21.Enabled = false;
+            if(!Global.debug){
+                this.button21.Enabled = false;
+                this.button25.Enabled = false;    
+            }
+
+            //输出信息
+            this.updateOutput("===============================\n");
+            this.updateOutput("你好,"+Global.username+"\n");
+            this.updateOutput("欢迎使用Android IDS 辅助工具\n");
+            this.updateOutput("版本:" + Global.version + "\n");
+            this.updateOutput("部分功能可能与虚拟机网卡冲突，请暂时禁用虚拟网卡.\n");
+            this.updateOutput("如遇问题，请联系jason.liu@amttgroup.com\n");
+            this.updateOutput("===============================\n");
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             killSustainedProcess();
             killBriefProcessProcess();
-            killAdb();
+            if(!Global.debug){
+                killAdb();
+            }
         }
 
         //获得cmd进程
@@ -423,7 +405,6 @@ namespace AndroidIdsTool
         private void connectClient()
         {
             killSustainedProcess();
-            killAdb();
             String ip = checkedClientList[0].ToString();
             this.updateOutput("==============" + ip + "===============\n");
             connectClient(ip);
@@ -456,7 +437,6 @@ namespace AndroidIdsTool
 
             String order = "";
             currentIp = ip;
-            killAdb();
             Thread.Sleep(1000);
 
             order = adbPath + " connect " + ip;
@@ -523,7 +503,6 @@ namespace AndroidIdsTool
         private void exportLog()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -575,7 +554,6 @@ namespace AndroidIdsTool
         private void exportDebug()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -622,7 +600,6 @@ namespace AndroidIdsTool
         private void installApp()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -668,7 +645,6 @@ namespace AndroidIdsTool
         private void uninstallApp()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -713,7 +689,6 @@ namespace AndroidIdsTool
         private void startApp()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -758,7 +733,6 @@ namespace AndroidIdsTool
         private void quickStartApp()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -820,7 +794,6 @@ namespace AndroidIdsTool
         private void build()
         {
             killBriefProcessProcess();
-            killAdb();
             end = false;
             for (int i = 0; i < checkedClientList.Count; i++)
             {
@@ -881,7 +854,7 @@ namespace AndroidIdsTool
             {
                 if (protectList.IndexOf(cmd) != -1)
                 {
-                    this.updateOutput("危险操作!!!请在自定义框输入'" + cmd + "'再发送\n");
+                    this.updateOutput("危险操作!!!请在自定义框输入' " + cmd + " '再发送\n");
                     return;
                 }
             }
@@ -1132,8 +1105,6 @@ namespace AndroidIdsTool
                     this.updateOutput("==================END==================\n\n\n");
                 }
             }
-
-
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1328,7 +1299,6 @@ namespace AndroidIdsTool
         private void button22_Click(object sender, EventArgs e)
         {
             this.killSustainedProcess();
-            this.killAdb();
         }
         //清空输出
         private void button15_Click(object sender, EventArgs e)
@@ -1373,12 +1343,14 @@ namespace AndroidIdsTool
                 String iv = Common.formatStr(Global.iv, 16);
                 cmd = Common.encrypt(msg, key, iv).Trim();
 
-                this.updateOutput("当前处于安全模式\n");
-                this.updateOutput("本机IP: " + ip + "\n");
-                this.updateOutput("加密前的命令: " + msg + "\n");
-                this.updateOutput("加密key: " + key + "\n");
-                this.updateOutput("加密iv: " + iv + "\n");
-                this.updateOutput("加密后的命令: " + cmd + "\n");
+                if(Global.debug){
+                    this.updateOutput("当前处于安全模式\n");
+                    this.updateOutput("本机IP: " + ip + "\n");
+                    this.updateOutput("加密前的命令: " + msg + "\n");
+                    this.updateOutput("加密key: " + key + "\n");
+                    this.updateOutput("加密iv: " + iv + "\n");
+                    this.updateOutput("加密后的命令: " + cmd + "\n");
+                }
             }
             else
             {
@@ -1394,6 +1366,7 @@ namespace AndroidIdsTool
             sock.SendTo(buffer, iep);
             sock.Close();
             this.updateOutput("向端口" + port + "发送"+msg+"\n");
+            this.button29.Enabled = true;
         }
 
         //重启所有客户端
@@ -1450,6 +1423,7 @@ namespace AndroidIdsTool
         {
             Thread t = new Thread(new ThreadStart(this.listenCmd));
             t.Start();
+            this.button29.Enabled = false;
         }
 
         //获取服务器IP
@@ -1524,6 +1498,16 @@ namespace AndroidIdsTool
             t.Start();
             Thread t2 = new Thread(new ThreadStart(this.udpServer));
             t2.Start();
+        }
+
+        private void 注销ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FileInfo file = new FileInfo(@"auth.txt");
+            if (file.Exists)
+            {
+                file.Delete(); //删除单个文件
+            }
+            Application.Exit();
         }
     }
 }

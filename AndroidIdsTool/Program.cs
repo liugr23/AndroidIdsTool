@@ -15,7 +15,14 @@ namespace AndroidIdsTool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            Authorize authorize = new Authorize();
+            authorize.ShowDialog();
+
+            if (authorize.pass)
+            {
+                Application.Run(new Form1());
+            }           
         }
     }
 }
