@@ -18,7 +18,7 @@ namespace AndroidIdsTool
             this.labelVersion.Text = String.Format("版本 {0}", Global.version);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyCompany;
-            this.textBoxDescription.Text = AssemblyDescription;
+            this.textBoxDescription.Text = AssemblyDescription + "\r\n\r\n授权给\r\n" + Global.username + "@" + System.Environment.MachineName + "\r\n用户协议\r\n"+Global.userAgreement ;
         }
 
         #region 程序集特性访问器

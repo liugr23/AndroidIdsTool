@@ -56,13 +56,6 @@ namespace AndroidIdsTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (System.Environment.CurrentDirectory.IndexOf(" ") != -1 || isChinese(System.Environment.CurrentDirectory))
-            {
-                MessageBox.Show("程序路径不能含有空格或者中文");
-                Application.Exit();
-                return;
-            }
-
             this.Text = this.Text + "@" + Common.getIPAddress();
 
             //显示列表
@@ -1156,10 +1149,6 @@ namespace AndroidIdsTool
         //测试
         private void button17_Click(object sender, EventArgs e)
         {
-            if (isChinese(@"aaa!@#$%^&*()1"))
-            {
-                this.updateOutput("中文");
-            }
         }
 
         //更新输出信息
@@ -1304,24 +1293,6 @@ namespace AndroidIdsTool
         private void button15_Click(object sender, EventArgs e)
         {
             this.opRichTextBox.Text = "";
-        }
-
-        //判断是否含有中文
-        private bool isChinese(string CString)
-        {
-            bool BoolValue = false;
-            for (int i = 0; i < CString.Length; i++)
-            {
-                if (Convert.ToInt32(Convert.ToChar(CString.Substring(i, 1))) < Convert.ToInt32(Convert.ToChar(128)))
-                {
-                    BoolValue = false;
-                }
-                else
-                {
-                    return BoolValue = true;
-                }
-            }
-            return BoolValue;
         }
 
         private void button26_Click(object sender, EventArgs e)
@@ -1503,6 +1474,11 @@ namespace AndroidIdsTool
         private void 注销ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileInfo file = new FileInfo(@"auth.txt");
+            if (file.Exists)
+            {
+                file.Delete(); //删除单个文件
+            }
+            file = new FileInfo(@"license.txt");
             if (file.Exists)
             {
                 file.Delete(); //删除单个文件

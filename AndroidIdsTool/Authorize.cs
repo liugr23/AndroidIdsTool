@@ -47,7 +47,6 @@ namespace AndroidIdsTool
                 if (txt != "")
                 {
                     string auth = Common.decrypt(txt, Global.appKey, Global.appIv);
-                    MessageBox.Show(auth);
                     if (auth != "" && auth.IndexOf("#") != -1)
                     {
                         username = auth.Split('#')[0];

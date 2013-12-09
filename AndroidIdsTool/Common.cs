@@ -134,5 +134,23 @@ namespace AndroidIdsTool
             }
             return sb.ToString();
         }
+
+        //判断是否含有中文
+        public static bool isChinese(string CString)
+        {
+            bool BoolValue = false;
+            for (int i = 0; i < CString.Length; i++)
+            {
+                if (Convert.ToInt32(Convert.ToChar(CString.Substring(i, 1))) < Convert.ToInt32(Convert.ToChar(128)))
+                {
+                    BoolValue = false;
+                }
+                else
+                {
+                    return BoolValue = true;
+                }
+            }
+            return BoolValue;
+        }
     }
 }
