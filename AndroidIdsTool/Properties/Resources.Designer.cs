@@ -79,5 +79,29 @@ namespace IdsAndroidTool.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!!!请勿随意修改&gt;
+        ///reboot#重启
+        ///debugTask#调试任务
+        ///debugUi#调试UI
+        ///resetApp#重置客户端配置文件*
+        ///resetData#重置客户端任务数据
+        ///-1#===分割线(不要选我)===
+        ///keepTop#保持最前端
+        ///cancelTop#取消保持最前端
+        ///startStartup#开启开机启动
+        ///stopStartup#关闭开机启动
+        ///debug#Debug
+        ///screenshot#截图
+        ///restartApp#重启应用
+        ///stopService#关闭服务
+        ///restartTask#重启任务.
+        /// </summary>
+        internal static string cmd {
+            get {
+                return ResourceManager.GetString("cmd", resourceCulture);
+            }
+        }
     }
 }

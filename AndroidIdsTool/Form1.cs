@@ -75,6 +75,13 @@ namespace AndroidIdsTool
                 fsObj.Write(Save, 0, Save.Length);
                 fsObj.Close();
             }
+            if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\cmd.txt"))
+            {
+                byte[] Save = System.Text.Encoding.UTF8.GetBytes(global::IdsAndroidTool.Properties.Resources.cmd);
+                FileStream fsObj = new FileStream(System.Environment.CurrentDirectory + @"\cmd.txt", FileMode.CreateNew);
+                fsObj.Write(Save, 0, Save.Length);
+                fsObj.Close();
+            }
 
             // 必要文件
             if (!System.IO.File.Exists(System.Environment.CurrentDirectory + @"\adb.exe") || !System.IO.File.Exists(System.Environment.CurrentDirectory + @"\AdbWinApi.dll"))
@@ -90,27 +97,7 @@ namespace AndroidIdsTool
                 adbPath = @"E:\Free\android\sdk\platform-tools\adb.exe";
             }
 
-            //命令列表
-            ArrayList list = new ArrayList();
-            list.Add(new DictionaryEntry("reboot", "重启"));
-            list.Add(new DictionaryEntry("debugTask", "调试任务"));
-            list.Add(new DictionaryEntry("debugUi", "调试UI"));
-            list.Add(new DictionaryEntry("resetApp", "重置客户端配置文件*"));
-            list.Add(new DictionaryEntry("resetData", "重置客户端任务数据"));
-            list.Add(new DictionaryEntry("-1", "===分割线(不要选我)==="));
-            list.Add(new DictionaryEntry("keepTop", "保持最前端"));
-            list.Add(new DictionaryEntry("cancelTop", "取消保持最前端"));
-            list.Add(new DictionaryEntry("startStartup", "开启开机启动"));
-            list.Add(new DictionaryEntry("stopStartup", "关闭开机启动"));
-            list.Add(new DictionaryEntry("debug", "Debug"));
-            list.Add(new DictionaryEntry("screenshot", "截图"));
-            list.Add(new DictionaryEntry("restartApp", "重启应用"));
-            list.Add(new DictionaryEntry("stopService", "关闭服务"));
-            list.Add(new DictionaryEntry("restartTask", "重启任务"));
-            
-            this.cmdComboBox.DataSource = list;
-            this.cmdComboBox.DisplayMember = "Value";//显示的Text值
-            this.cmdComboBox.ValueMember = "Key";// 实际value值
+            fillCmd();
 
             //切换效果列表
             ArrayList effectList = new ArrayList();
@@ -202,6 +189,40 @@ namespace AndroidIdsTool
             killBriefProcessProcess();
             if(!Global.debug){
                 killAdb();
+            }
+        }
+
+        //填充命令列表
+        private void fillCmd()
+        {
+            this.cmdComboBox.Items.Clear();
+            if (System.IO.File.Exists(@"cmd.txt"))
+            {
+                ArrayList list = new ArrayList();
+                string ReadLine;
+                string[] array;
+                StreamReader reader = new StreamReader(@"cmd.txt");
+                while (reader.Peek() >= 0)  
+                {  
+                    try  
+                    {  
+                        ReadLine = reader.ReadLine();
+                        if (ReadLine != "" && ReadLine.IndexOf("<!!!") == -1)   
+                        {
+                            array = ReadLine.Split('#');  
+                            if (array.Length != 0)  
+                            {
+                                list.Add(new DictionaryEntry(array[0].Trim(), array[1].Trim()));
+                            }
+                        }  
+                    }  
+                    catch (Exception ex)  
+                    {   
+                    }                  
+                }
+                this.cmdComboBox.DataSource = list;
+                this.cmdComboBox.DisplayMember = "key";//显示的Text值
+                this.cmdComboBox.ValueMember = "Value";// 实际value值
             }
         }
 
@@ -832,10 +853,6 @@ namespace AndroidIdsTool
         //发送开发命令
         private void button14_Click(object sender, EventArgs e)
         {
-            //保护危险动作
-            ArrayList protectList = new ArrayList();
-            protectList.Add("resetApp");
-
             String cmd = this.cmdComboBox.SelectedValue.ToString();
 
             String custom = this.cmdTextBox.Text;
@@ -843,13 +860,30 @@ namespace AndroidIdsTool
             {
                 cmd = custom;
             }
-            else
+
+            if (cmd == "-1")
             {
-                if (protectList.IndexOf(cmd) != -1)
-                {
-                    this.updateOutput("危险操作!!!请在自定义框输入' " + cmd + " '再发送\n");
-                    return;
-                }
+                return;
+            }
+
+            if (cmd == "ifconfig")
+            {
+                cmd = "ifconfig@0#1#2#3#4#5?";
+            }
+
+            if (cmd == "setServerIp")
+            {
+                cmd = "setServerIp@?";
+            }
+
+            if (cmd == "kill")
+            {
+                cmd = "kill@?";
+            }
+
+            if(cmd.IndexOf("?")!=-1){
+                this.cmdTextBox.Text = cmd;
+                return;
             }
 
             String portStr = this.portTextBox.Text;
@@ -869,6 +903,7 @@ namespace AndroidIdsTool
                     this.updateOutput("==================END==================\n");
                 }
             }
+            this.cmdTextBox.Text = "";
         }
 
         //连接客户端

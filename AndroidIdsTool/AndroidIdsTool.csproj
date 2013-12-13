@@ -144,6 +144,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\cmd.dat" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -166,6 +167,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\cmd.txt" />
     <None Include="Resources\AdbWinApi.dll" />
     <None Include="Resources\adb.exe" />
     <Content Include="ic_launcher.ico" />
