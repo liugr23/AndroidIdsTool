@@ -508,9 +508,12 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " -s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/log " + logDir;
             briefProcess.StandardInput.WriteLine(order);
-            Thread.Sleep(1000);
-            order = adbPath + " disconnect " + ip;
-            briefProcess.StandardInput.WriteLine(order);
+            if (!Global.debug)
+            {
+                Thread.Sleep(1000);
+                order = adbPath + " disconnect " + ip;
+                briefProcess.StandardInput.WriteLine(order);
+            }
         }
 
         //批量导出日志
@@ -559,9 +562,11 @@ namespace AndroidIdsTool
             Thread.Sleep(1000);
             order = adbPath + " -s " + ip + ":5555 pull  /data/data/com.amtt.ids/files/debug " + debugDir;
             briefProcess.StandardInput.WriteLine(order);
-            Thread.Sleep(1000);
-            order = adbPath + " disconnect " + ip;
-            briefProcess.StandardInput.WriteLine(order);
+            if(!Global.debug){
+                Thread.Sleep(1000);
+                order = adbPath + " disconnect " + ip;
+                briefProcess.StandardInput.WriteLine(order);
+            }
         }
 
         //批量导出debug信息
